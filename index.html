@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>SANCTVM</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0B0B0C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SANCTVM">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{
+  --nox:#0B0B0C;
+  --crypt:#121214;
+  --cinis:#1E1E22;
+  --stone:#2C2C32;
+  --edge:#3A3A42;
+  --ossa:#E8E2D5;
+  --ash:#8B8780;
+  --dim:#5E5B56;
+  --sanguis:#8C1626;
+  --sanguis-lo:#4A0C15;
+  --viola:#5A4670;
+  --viola-lo:#2E2440;
+  --serif:'Iowan Old Style','Charter','Palatino Linotype',Georgia,serif;
+  --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  --sys:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--nox);color:var(--ossa);font-family:var(--sys);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overscroll-behavior-y:none;-webkit-user-select:none;user-select:none;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--ossa);outline-offset:2px}
+
+/* ---- inscriptional label ---- */
+.lbl{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ash);font-weight:600}
+.rule{height:1px;background:var(--edge);border:0;margin:0}
+
+/* ---- app shell ---- */
+#app{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.screen{display:none;flex:1;flex-direction:column}
+.screen.on{display:flex}
+.pad{padding:0 18px}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:120px}
+
+/* ---- header ---- */
+header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
+  display:flex;align-items:center;gap:14px;background:var(--nox);position:sticky;top:0;z-index:20}
+.mark{width:38px;flex:0 0 38px}
+.mark svg{width:100%;height:auto;display:block}
+.mark path{stroke:var(--ossa);stroke-width:2.4;fill:none;stroke-linecap:square}
+.hgroup{flex:1;min-width:0}
+.wordmark{font-family:var(--serif);font-size:19px;letter-spacing:.34em;line-height:1;margin:0 0 5px}
+.hsub{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.hbtn{padding:8px;margin:-8px;color:var(--ash);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+
+/* ---- day cards ---- */
+.days{padding:20px 18px 8px;display:flex;flex-direction:column;gap:11px}
+.day{background:var(--crypt);border:1px solid var(--edge);padding:16px 17px;text-align:left;
+  display:flex;align-items:center;gap:15px;width:100%;transition:border-color .15s,background .15s}
+.day:active{background:var(--cinis);border-color:var(--ash)}
+.day .idx{font-family:var(--serif);font-size:24px;color:var(--dim);line-height:1;width:26px;flex:0 0 26px}
+.day .body{flex:1;min-width:0}
+.day .nm{font-family:var(--serif);font-size:20px;letter-spacing:.05em;margin-bottom:5px}
+.day .meta{font-size:11px;color:var(--ash);letter-spacing:.04em}
+.day .ago{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);text-align:right;flex:0 0 auto}
+.day.stale .ago{color:var(--sanguis)}
+
+/* ---- deload banner ---- */
+.deload{margin:18px 18px 0;border:1px solid var(--viola);background:var(--viola-lo);padding:13px 15px}
+.deload .t{font-family:var(--serif);font-size:15px;letter-spacing:.14em;margin-bottom:5px}
+.deload .d{font-size:11.5px;color:#BFB3D0;line-height:1.5}
+
+/* ---- weekly volume ---- */
+.vol{padding:22px 18px 10px}
+.volrow{display:flex;align-items:center;gap:11px;padding:7px 0}
+.volrow .n{width:78px;flex:0 0 78px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ash)}
+.bar{flex:1;height:3px;background:var(--stone);position:relative}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ossa);display:block}
+.bar.hit i{background:var(--sanguis)}
+.volrow .v{width:52px;flex:0 0 52px;text-align:right;font-family:var(--mono);font-size:11px;color:var(--ash)}
+
+/* ---- session header ---- */
+.shead{padding:16px 18px 14px;border-bottom:1px solid var(--edge);position:sticky;top:0;background:var(--nox);z-index:15}
+.shead .top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.shead h2{font-family:var(--serif);font-size:23px;letter-spacing:.06em;margin:0}
+.clock{font-family:var(--mono);font-size:13px;color:var(--ash)}
+.prog{height:2px;background:var(--stone);margin-top:12px}
+.prog i{display:block;height:100%;background:var(--ossa);transition:width .3s}
+
+/* ---- exercise ---- */
+.ex{border-bottom:1px solid var(--edge);padding:17px 18px 18px}
+.ex.done{opacity:.42}
+.ex.skip{opacity:.3}
+.exhead{display:flex;align-items:flex-start;gap:12px;margin-bottom:4px}
+.exhead h3{font-family:var(--serif);font-size:17px;font-weight:400;line-height:1.3;margin:0;flex:1}
+.exhead .num{font-family:var(--mono);font-size:11px;color:var(--dim);padding-top:4px}
+.exmeta{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 4px 26px}
+.last{margin:9px 0 0 26px;font-family:var(--mono);font-size:11.5px;color:var(--ash)}
+.last b{color:var(--ossa);font-weight:400}
+.last .none{color:var(--dim)}
+
+.sets{margin:13px 0 0 26px;display:flex;flex-direction:column;gap:8px}
+.set{display:flex;align-items:center;gap:9px}
+.set .sn{font-family:var(--mono);font-size:11px;color:var(--dim);width:16px;flex:0 0 16px}
+.fld{flex:1;position:relative}
+.fld input{width:100%;background:var(--crypt);border:1px solid var(--edge);color:var(--ossa);
+  font-family:var(--mono);font-size:16px;padding:11px 34px 11px 12px;text-align:left;border-radius:0;
+  -webkit-appearance:none;appearance:none}
+.fld input::placeholder{color:var(--dim)}
+.fld input:focus{border-color:var(--ash);outline:none}
+.fld u{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:10px;
+  color:var(--dim);text-decoration:none;letter-spacing:.08em;pointer-events:none}
+.tick{width:44px;flex:0 0 44px;height:42px;border:1px solid var(--edge);background:var(--crypt);
+  display:flex;align-items:center;justify-content:center;transition:.15s}
+.tick svg{width:16px;height:16px;stroke:var(--dim);stroke-width:2.5;fill:none}
+.set.ok .tick{background:var(--sanguis-lo);border-color:var(--sanguis)}
+.set.ok .tick svg{stroke:var(--ossa)}
+.set.pr .fld input{border-color:var(--sanguis)}
+
+.exacts{margin:13px 0 0 26px;display:flex;gap:18px}
+.exacts button{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:6px 0}
+.exacts button:active{color:var(--ossa)}
+
+/* ---- rest timer ---- */
+#rest{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--crypt);
+  border-top:1px solid var(--sanguis);transform:translateY(101%);transition:transform .28s ease;
+  padding:14px 18px calc(14px + env(safe-area-inset-bottom))}
+#rest.up{transform:translateY(0)}
+#rest .row{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:16px}
+#rest .t{font-family:var(--mono);font-size:30px;letter-spacing:.02em;line-height:1;font-variant-numeric:tabular-nums}
+#rest .l{flex:1;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ash)}
+#rest button{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ash);padding:9px 11px;border:1px solid var(--edge)}
+#rest .pbar{position:absolute;left:0;top:0;height:2px;background:var(--sanguis);transition:width 1s linear}
+
+/* ---- footer actions ---- */
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(to top,var(--nox) 62%,transparent);
+  padding:22px 18px calc(16px + env(safe-area-inset-bottom))}
+.foot .in{max-width:560px;margin:0 auto;display:flex;gap:10px}
+.btn{flex:1;padding:16px;border:1px solid var(--edge);background:var(--crypt);
+  font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;text-align:center;font-weight:600}
+.btn:active{background:var(--cinis)}
+.btn.pri{background:var(--sanguis-lo);border-color:var(--sanguis);color:var(--ossa)}
+.btn.gh{flex:0 0 auto;padding:16px 20px;color:var(--ash)}
+
+/* ---- history / settings ---- */
+.sec{padding:22px 18px 6px}
+.sec h4{font-family:var(--serif);font-size:14px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ash);font-weight:400;margin:0 0 14px}
+.hrow{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--stone);width:100%;text-align:left}
+.hrow .d{font-family:var(--mono);font-size:11px;color:var(--dim);width:52px;flex:0 0 52px}
+.hrow .n2{flex:1;font-family:var(--serif);font-size:15px}
+.hrow .v2{font-family:var(--mono);font-size:11px;color:var(--ash)}
+.hrow.aband .n2{color:var(--dim);text-decoration:line-through}
+.field{margin-bottom:18px}
+.field label{display:block;margin-bottom:7px}
+.field input,.field select{width:100%;background:var(--crypt);border:1px solid var(--edge);color:var(--ossa);
+  font-family:var(--mono);font-size:15px;padding:12px;border-radius:0;-webkit-appearance:none}
+.note{font-size:11.5px;color:var(--dim);line-height:1.6;margin:16px 0 0}
+.empty{padding:44px 18px;text-align:center;color:var(--dim);font-size:12.5px;line-height:1.7}
+.danger{color:var(--sanguis)}
+#toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,14px);z-index:60;
+  background:var(--stone);border:1px solid var(--edge);padding:11px 17px;font-size:12px;
+  opacity:0;transition:.25s;pointer-events:none;max-width:88vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="mark" id="mark"></div>
+    <div class="hgroup">
+      <div class="wordmark">SANCTVM</div>
+      <div class="hsub" id="hsub">Ora · et · Labora</div>
+    </div>
+    <button class="hbtn" id="navBtn">Log</button>
+  </header>
+
+  <!-- HOME -->
+  <section class="screen on" id="scHome">
+    <div class="scroll">
+      <div id="deloadBox"></div>
+      <div class="days" id="days"></div>
+      <div class="vol">
+        <div class="lbl" style="margin-bottom:12px">Hard sets · this week</div>
+        <div id="volList"></div>
+        <p class="note">Shared-target exercises count a half set to each muscle. Targets: chest 14, back 14, glutes 14.</p>
+      </div>
+    </div>
+    <div class="foot"><div class="in">
+      <button class="btn" id="toHist">History</button>
+      <button class="btn" id="toSet">Settings</button>
+    </div></div>
+  </section>
+
+  <!-- SESSION -->
+  <section class="screen" id="scSess">
+    <div class="shead">
+      <div class="top">
+        <h2 id="sessName">—</h2>
+        <div class="clock" id="sessClock">0:00</div>
+      </div>
+      <div class="prog"><i id="sessProg" style="width:0%"></i></div>
+    </div>
+    <div class="scroll" id="exList"></div>
+    <div class="foot"><div class="in">
+      <button class="btn gh" id="abandon">Discard</button>
+      <button class="btn pri" id="finish">Finish</button>
+    </div></div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="screen" id="scHist">
+    <div class="scroll">
+      <div class="sec"><h4>Completed sessions</h4><div id="histList"></div></div>
+    </div>
+    <div class="foot"><div class="in"><button class="btn" id="histBack">Back</button></div></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="screen" id="scSet">
+    <div class="scroll">
+      <div class="sec">
+        <h4>Cycle</h4>
+        <div class="field"><label class="lbl">Current cycle</label><input type="number" id="fCycle" min="1" inputmode="numeric"></div>
+        <div class="field"><label class="lbl">Cycle start date</label><input type="date" id="fStart"></div>
+        <div class="field"><label class="lbl">Deload every (weeks)</label><input type="number" id="fDeload" min="2" max="12" inputmode="numeric"></div>
+        <button class="btn" id="saveMeta" style="width:100%">Save cycle</button>
+      </div>
+      <hr class="rule" style="margin:26px 18px">
+      <div class="sec">
+        <h4>Data</h4>
+        <button class="btn" id="doExport" style="width:100%;margin-bottom:10px">Export backup</button>
+        <button class="btn" id="doImport" style="width:100%">Import backup</button>
+        <input type="file" id="fileIn" accept="application/json,.json" hidden>
+        <p class="note">Everything lives in this phone's local database. Deleting the home-screen icon deletes the data with it — export before you do.</p>
+        <button class="btn danger" id="wipe" style="width:100%;margin-top:22px">Erase all data</button>
+      </div>
+    </div>
+    <div class="foot"><div class="in"><button class="btn" id="setBack">Back</button></div></div>
+  </section>
+</div>
+
+<div id="rest"><i class="pbar" id="restBar"></i><div class="row">
+  <div class="t" id="restT">0:00</div>
+  <div class="l" id="restL">Rest</div>
+  <button id="rest30">+30s</button>
+  <button id="restSkip">Skip</button>
+</div></div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+/* ============ PROGRAM ============ */
+const PROGRAM = {
+  UA:{name:'Upper A', ex:[
+    ['Incline Chest Flys',4,'5-10',180,['Chest']],
+    ['Weighted Pull Ups',3,'5-10',180,['Back']],
+    ['High to Low Cable Flys',3,'5-10',90,['Chest']],
+    ['Chest Supported Rows · Neutral',4,'5-10',180,['Back']],
+    ['Cable Lateral Raises',2,'5-10',90,['Shoulders']],
+    ['Reverse Pec Deck',2,'5-10',90,['Shoulders']],
+    ['Seated DB Curls · Arm Support',2,'5-10',90,['Biceps']],
+    ['Seated Cable Tricep Push-Downs',2,'5-10',90,['Triceps']]]},
+  LA:{name:'Lower A', ex:[
+    ['Leg Extensions',4,'8-10',90,['Quads']],
+    ['Seated Leg Curls',3,'8-10',90,['Hamstrings']],
+    ['Bulgarian Split Squats',4,'6-8',180,['Quads','Glutes']],
+    ['45° Back Extensions',3,'10-12',90,['Glutes','Hamstrings']],
+    ['Step Ups / Kickbacks',2,'8-10',90,['Glutes']],
+    ['Adduction Machine',2,'10-12',90,['Adductors']],
+    ['Ab Crunch Machine',2,'10-12',90,['Abs']]]},
+  UB:{name:'Upper B', ex:[
+    ['Incline Machine Press',3,'5-10',180,['Chest']],
+    ['Wide Grip Lat Pull-Down',3,'5-10',180,['Back']],
+    ['Pec Fly Machine',4,'5-10',90,['Chest']],
+    ['T-Bar Row',4,'5-10',180,['Back']],
+    ['DB Lateral Raises',2,'5-10',90,['Shoulders']],
+    ['Rear Delt Fly',2,'5-10',90,['Shoulders']],
+    ['Seated Hammer Curls · Arm Support',2,'5-10',90,['Biceps']],
+    ['Overhead Tricep Extensions',2,'5-10',90,['Triceps']]]},
+  LB:{name:'Lower B', ex:[
+    ['Leg Extensions',4,'8-10',90,['Quads']],
+    ['Seated Leg Curls',3,'8-10',90,['Hamstrings']],
+    ['Machine Hip Thrust',4,'6-8',90,['Glutes']],
+    ['Romanian Deadlift',3,'10-12',90,['Glutes','Hamstrings']],
+    ['Abduction Machine',2,'10-12',90,['Glutes']],
+    ['Adduction Machine',2,'10-12',90,['Adductors']],
+    ['Ab Crunch Machine',2,'10-12',90,['Abs']]]}
+};
+const ORDER=['UA','LA','UB','LB'];
+const TRACKED=[['Chest',14],['Back',14],['Glutes',14],['Quads',10],['Hamstrings',10],['Shoulders',8]];
+
+/* ============ DB ============ */
+const DB={h:null};
+function open(){return new Promise((res,rej)=>{
+  const r=indexedDB.open('sanctum',1);
+  r.onupgradeneeded=e=>{const d=e.target.result;
+    if(!d.objectStoreNames.contains('meta'))d.createObjectStore('meta');
+    if(!d.objectStoreNames.contains('sessions'))d.createObjectStore('sessions',{keyPath:'id'});};
+  r.onsuccess=e=>{DB.h=e.target.result;res()};
+  r.onerror=()=>rej(r.error);});}
+function tx(store,mode){return DB.h.transaction(store,mode).objectStore(store);}
+function put(store,val,key){return new Promise((res,rej)=>{const r=tx(store,'readwrite').put(val,key);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+function get(store,key){return new Promise((res,rej)=>{const r=tx(store,'readonly').get(key);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+function all(store){return new Promise((res,rej)=>{const r=tx(store,'readonly').getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);});}
+function del(store,key){return new Promise((res,rej)=>{const r=tx(store,'readwrite').delete(key);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
+
+/* ============ STATE ============ */
+let META={version:2,currentCycle:1,cycleStartDate:'2026-07-02',deloadIntervalWeeks:5};
+let SESSIONS=[];
+let S=null;              // active session
+let tick=null, restEnd=0, restTotal=0, restTick=null;
+
+/* ============ UTIL ============ */
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const fmt=s=>Math.floor(s/60)+':'+pad(Math.max(0,s%60));
+const today=()=>new Date().toISOString().slice(0,10);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('on'),2200);}
+function buzz(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
+function daysAgo(d){const a=new Date(today()),b=new Date(d);return Math.round((a-b)/864e5);}
+
+function weekOfCycle(){
+  const st=new Date(META.cycleStartDate+'T00:00:00');
+  const now=new Date(today()+'T00:00:00');
+  return Math.floor((now-st)/6048e5)+1;
+}
+function isDeload(){
+  const iv=META.deloadIntervalWeeks;
+  return iv>1 && weekOfCycle()%iv===0;
+}
+function weekStart(){
+  const d=new Date(today()+'T00:00:00');
+  const dow=(d.getDay()+6)%7;       // Monday = 0
+  d.setDate(d.getDate()-dow);
+  return d.toISOString().slice(0,10);
+}
+
+/* ============ CISTERCIAN NUMERAL ============ */
+const SEG={1:[[0,0,1,0]],2:[[0,1,1,1]],3:[[0,0,1,1]],4:[[0,1,1,0]],
+  5:[[0,0,1,0],[0,1,1,0]],6:[[1,0,1,1]],7:[[0,0,1,0],[1,0,1,1]],
+  8:[[0,1,1,1],[1,0,1,1]],9:[[0,0,1,0],[0,1,1,1],[1,0,1,1]]};
+function cistercian(n){
+  n=Math.max(0,Math.min(9999,Math.round(n)));
+  const dg=[n%10,Math.floor(n/10)%10,Math.floor(n/100)%10,Math.floor(n/1000)%10];
+  const W=20,H=52,h=16,cx=26,top=7;
+  const p=['M '+cx+' '+top+' L '+cx+' '+(top+H)];
+  dg.forEach((d,i)=>{
+    if(!d)return;
+    const sx=(i===1||i===3)?-1:1, sy=(i>=2)?-1:1, oy=(i>=2)?top+H:top;
+    SEG[d].forEach(s=>{
+      p.push('M '+(cx+sx*s[0]*W)+' '+(oy+sy*s[1]*h)+' L '+(cx+sx*s[2]*W)+' '+(oy+sy*s[3]*h));
+    });
+  });
+  return '<svg viewBox="0 0 52 66" aria-hidden="true"><path d="'+p.join(' ')+'"/></svg>';
+}
+
+/* ============ VOLUME ============ */
+function setsByTarget(from){
+  const map={};
+  SESSIONS.filter(s=>s.status==='completed'&&s.date>=from).forEach(s=>{
+    s.exercises.forEach(e=>{
+      const done=e.sets.filter(x=>x.done).length;
+      if(!done||!e.targets)return;
+      const share=1/e.targets.length;
+      e.targets.forEach(t=>{map[t]=(map[t]||0)+done*share;});
+    });
+  });
+  return map;
+}
+function lastFor(exName,excludeId){
+  for(let i=SESSIONS.length-1;i>=0;i--){
+    const s=SESSIONS[i];
+    if(s.id===excludeId||s.status!=='completed')continue;
+    const e=s.exercises.find(x=>x.name===exName);
+    if(!e)continue;
+    const done=e.sets.filter(x=>x.done);
+    if(done.length)return{date:s.date,sets:done};
+  }
+  return null;
+}
+function best(setsArr){
+  return setsArr.reduce((m,x)=>Math.max(m,(x.weight||0)*(x.reps||0)),0);
+}
+
+/* ============ HOME ============ */
+function renderHome(){
+  $('mark').innerHTML=cistercian(META.currentCycle);
+  $('hsub').textContent='Cycle '+META.currentCycle+' · Week '+weekOfCycle();
+
+  $('deloadBox').innerHTML = isDeload()
+    ? '<div class="deload"><div class="t">DELOAD WEEK</div><div class="d">Same movements, half the sets, stop 4–5 reps short. This week restores you; it is not meant to be hard.</div></div>'
+    : '';
+
+  const d=$('days');d.innerHTML='';
+  ORDER.forEach((k,i)=>{
+    const p=PROGRAM[k];
+    const prev=SESSIONS.filter(s=>s.dayKey===k&&s.status==='completed').pop();
+    const ago=prev?daysAgo(prev.date):null;
+    const agoTxt=prev?(ago===0?'today':ago===1?'1 day':ago+' days'):'never';
+    const sets=p.ex.reduce((a,e)=>a+e[1],0);
+    const b=document.createElement('button');
+    b.className='day'+((ago===null||ago>=8)?' stale':'');
+    b.innerHTML='<span class="idx">'+['I','II','III','IV'][i]+'</span>'+
+      '<span class="body"><span class="nm">'+p.name+'</span>'+
+      '<span class="meta">'+p.ex.length+' exercises · '+sets+' sets</span></span>'+
+      '<span class="ago">'+agoTxt+'</span>';
+    b.onclick=()=>startSession(k);
+    d.appendChild(b);
+  });
+
+  const map=setsByTarget(weekStart());
+  $('volList').innerHTML=TRACKED.map(([t,goal])=>{
+    const v=map[t]||0, pct=Math.min(100,v/goal*100);
+    return '<div class="volrow"><span class="n">'+t+'</span>'+
+      '<span class="bar'+(v>=goal?' hit':'')+'"><i style="width:'+pct+'%"></i></span>'+
+      '<span class="v">'+(Math.round(v*10)/10)+'/'+goal+'</span></div>';
+  }).join('');
+}
+
+/* ============ SESSION ============ */
+function deloadSets(n){return isDeload()?Math.max(1,Math.ceil(n/2)):n;}
+function startSession(key){
+  const p=PROGRAM[key];
+  S={
+    id:String(Date.now()),
+    date:today(),
+    startedAt:Date.now(), endedAt:null,
+    cycle:META.currentCycle,
+    dayKey:key, dayName:p.name,
+    isDeload:isDeload(),
+    status:'active',
+    exercises:p.ex.map(e=>({
+      name:e[0], prescribed:e[1], repRange:e[2], restSec:e[3], targets:e[4],
+      skipped:false, notes:'',
+      sets:Array.from({length:deloadSets(e[1])},(_,i)=>({n:i+1,weight:null,reps:null,done:false,ts:null}))
+    })),
+    totalVolume:0, duration:0
+  };
+  show('scSess');
+  renderSession();
+  clearInterval(tick);
+  tick=setInterval(()=>{
+    $('sessClock').textContent=fmt(Math.floor((Date.now()-S.startedAt)/1000));
+  },1000);
+  requestWake();
+}
+
+function renderSession(){
+  $('sessName').textContent=S.dayName+(S.isDeload?' · deload':'');
+  const list=$('exList');
+  const keep=list.scrollTop;          // logging a set rebuilds the list — don't lose their place
+  list.innerHTML='';
+  S.exercises.forEach((e,ei)=>{
+    const prev=lastFor(e.name,S.id);
+    const div=document.createElement('div');
+    const allDone=e.sets.every(s=>s.done);
+    div.className='ex'+(e.skipped?' skip':allDone?' done':'');
+
+    let lastHtml;
+    if(e.skipped){lastHtml='<div class="last none">Skipped</div>';}
+    else if(prev){
+      lastHtml='<div class="last">Last · '+prev.date.slice(5)+' &nbsp; '+
+        prev.sets.map(s=>'<b>'+s.weight+'</b>×'+s.reps).join(' &nbsp; ')+'</div>';
+    } else {lastHtml='<div class="last none">No previous record</div>';}
+
+    div.innerHTML=
+      '<div class="exhead"><span class="num">'+pad(ei+1)+'</span><h3>'+e.name+'</h3></div>'+
+      '<div class="exmeta">'+e.sets.length+' × '+e.repRange+' · '+(e.restSec>=120?(e.restSec/60)+' min':e.restSec+'s')+' rest · '+e.targets.join(' / ')+'</div>'+
+      lastHtml+
+      (e.skipped?'':'<div class="sets">'+e.sets.map((s,si)=>{
+        const pb=prev&&(s.weight*s.reps)>best(prev.sets)&&s.done;
+        return '<div class="set'+(s.done?' ok':'')+(pb?' pr':'')+'" data-e="'+ei+'" data-s="'+si+'">'+
+          '<span class="sn">'+s.n+'</span>'+
+          '<span class="fld"><input type="number" inputmode="decimal" step="0.5" placeholder="—" value="'+(s.weight??'')+'" data-f="weight"><u>kg</u></span>'+
+          '<span class="fld"><input type="number" inputmode="numeric" placeholder="—" value="'+(s.reps??'')+'" data-f="reps"><u>reps</u></span>'+
+          '<button class="tick" aria-label="Log set '+s.n+'"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>'+
+        '</div>';}).join('')+'</div>')+
+      '<div class="exacts">'+
+        '<button data-act="skip" data-e="'+ei+'">'+(e.skipped?'Restore':'Skip exercise')+'</button>'+
+        (e.skipped?'':'<button data-act="addset" data-e="'+ei+'">Add set</button>')+
+      '</div>';
+    list.appendChild(div);
+  });
+  list.scrollTop=keep;
+  updateProg();
+}
+
+function updateProg(){
+  const tot=S.exercises.filter(e=>!e.skipped).reduce((a,e)=>a+e.sets.length,0);
+  const done=S.exercises.reduce((a,e)=>a+e.sets.filter(s=>s.done).length,0);
+  $('sessProg').style.width=(tot?done/tot*100:0)+'%';
+}
+
+$('exList').addEventListener('input',ev=>{
+  const inp=ev.target;if(inp.tagName!=='INPUT')return;
+  const row=inp.closest('.set');
+  const e=S.exercises[+row.dataset.e], s=e.sets[+row.dataset.s];
+  const v=inp.value===''?null:parseFloat(inp.value);
+  s[inp.dataset.f]=v;
+  save();
+});
+
+$('exList').addEventListener('click',ev=>{
+  const act=ev.target.closest('[data-act]');
+  if(act){
+    const e=S.exercises[+act.dataset.e];
+    if(act.dataset.act==='skip'){e.skipped=!e.skipped;}
+    else{e.sets.push({n:e.sets.length+1,weight:null,reps:null,done:false,ts:null});}
+    save();renderSession();return;
+  }
+  const tk=ev.target.closest('.tick');
+  if(!tk)return;
+  const row=tk.closest('.set');
+  const e=S.exercises[+row.dataset.e], s=e.sets[+row.dataset.s];
+  if(!s.done){
+    if(s.weight==null||s.reps==null){toast('Enter weight and reps first');return;}
+    s.done=true;s.ts=Date.now();buzz(18);
+    startRest(e.restSec,e.name);
+  }else{s.done=false;s.ts=null;}
+  save();renderSession();
+});
+
+/* ---- rest timer (survives lock: driven by timestamp) ---- */
+function startRest(sec,label){
+  restTotal=sec;restEnd=Date.now()+sec*1000;
+  $('restL').textContent=label;
+  $('rest').classList.add('up');
+  clearInterval(restTick);restTick=setInterval(paintRest,250);paintRest();
+}
+function paintRest(){
+  const left=Math.ceil((restEnd-Date.now())/1000);
+  if(left<=0){
+    $('restT').textContent='0:00';$('restBar').style.width='0%';
+    clearInterval(restTick);buzz([90,60,90]);
+    setTimeout(()=>$('rest').classList.remove('up'),1400);return;
+  }
+  $('restT').textContent=fmt(left);
+  $('restBar').style.width=(left/restTotal*100)+'%';
+}
+$('rest30').onclick=()=>{restEnd+=30000;restTotal+=30;paintRest();};
+$('restSkip').onclick=()=>{clearInterval(restTick);$('rest').classList.remove('up');};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&restEnd>Date.now())paintRest();});
+
+/* ---- wake lock (best effort) ---- */
+let wake=null;
+async function requestWake(){try{if('wakeLock'in navigator)wake=await navigator.wakeLock.request('screen');}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S)requestWake();});
+
+/* ---- finish / discard ---- */
+$('finish').onclick=async()=>{
+  const done=S.exercises.reduce((a,e)=>a+e.sets.filter(s=>s.done).length,0);
+  if(!done){toast('No sets logged — discard it instead');return;}
+  S.status='completed';
+  S.endedAt=Date.now();
+  S.duration=Math.floor((S.endedAt-S.startedAt)/1000);
+  S.totalVolume=S.exercises.reduce((a,e)=>a+e.sets.filter(s=>s.done)
+    .reduce((b,s)=>b+(s.weight||0)*(s.reps||0),0),0);
+  await put('sessions',S);
+  await load();
+  clearInterval(tick);releaseWake();
+  const t=S.totalVolume;S=null;
+  show('scHome');renderHome();
+  toast(done+' sets · '+Math.round(t).toLocaleString()+' kg moved');
+};
+$('abandon').onclick=async()=>{
+  if(!confirm('Discard this session? Nothing will be saved.'))return;
+  await del('sessions',S.id).catch(()=>{});
+  clearInterval(tick);releaseWake();S=null;
+  await load();show('scHome');renderHome();
+};
+function releaseWake(){try{wake&&wake.release();wake=null}catch(e){}}
+async function save(){if(S){await put('sessions',S);}updateProg();}
+
+/* ============ HISTORY ============ */
+function renderHist(){
+  const done=SESSIONS.filter(s=>s.status==='completed').slice().reverse();
+  $('histList').innerHTML=done.length?done.map(s=>{
+    const sets=s.exercises.reduce((a,e)=>a+e.sets.filter(x=>x.done).length,0);
+    return '<div class="hrow"><span class="d">'+s.date.slice(5)+'</span>'+
+      '<span class="n2">'+s.dayName+(s.isDeload?' · deload':'')+'</span>'+
+      '<span class="v2">'+sets+' set'+(sets===1?'':'s')+' · '+Math.round(s.totalVolume).toLocaleString()+' kg</span></div>';
+  }).join(''):'<div class="empty">Nothing logged yet.<br>Finish a session and it appears here.</div>';
+}
+
+/* ============ SETTINGS ============ */
+function renderSet(){
+  $('fCycle').value=META.currentCycle;
+  $('fStart').value=META.cycleStartDate;
+  $('fDeload').value=META.deloadIntervalWeeks;
+}
+$('saveMeta').onclick=async()=>{
+  META.currentCycle=Math.max(1,parseInt($('fCycle').value)||1);
+  META.cycleStartDate=$('fStart').value||today();
+  META.deloadIntervalWeeks=Math.max(2,parseInt($('fDeload').value)||5);
+  await put('meta',META,'meta');renderHome();toast('Cycle saved');
+};
+$('doExport').onclick=async()=>{
+  const data={format:'sanctum-v2',exportedAt:new Date().toISOString(),meta:META,sessions:SESSIONS};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='sanctum-backup-'+today()+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+};
+$('doImport').onclick=()=>$('fileIn').click();
+$('fileIn').onchange=async ev=>{
+  const f=ev.target.files[0];if(!f)return;
+  try{
+    const raw=JSON.parse(await f.text());
+    const incoming=normalise(raw);
+    const seen=new Set(SESSIONS.map(s=>s.id));
+    let n=0;
+    for(const s of incoming.sessions){if(seen.has(s.id))continue;await put('sessions',s);n++;}
+    if(incoming.meta){META=Object.assign(META,incoming.meta);await put('meta',META,'meta');}
+    await load();renderHome();renderSet();
+    toast(n+' session'+(n===1?'':'s')+' imported');
+  }catch(e){toast('Could not read that file');}
+  ev.target.value='';
+};
+/* accepts both the old app format and this one */
+function normalise(raw){
+  if(raw.format==='sanctum-v2')return{meta:raw.meta,sessions:raw.sessions||[]};
+  if(Array.isArray(raw.workoutLogs)){
+    const meta={currentCycle:raw.currentCycle||1,cycleStartDate:raw.cycleStartDate||today(),
+      deloadIntervalWeeks:raw.deloadIntervalWeeks||5};
+    const sessions=raw.workoutLogs.map(w=>{
+      const ex=(w.exercises||[]).map(e=>{
+        const sets=(e.sets||[]).map((s,i)=>({n:s.setNumber||i+1,weight:s.weight,reps:s.reps,
+          done:!!s.completed,ts:s.timestamp||null}));
+        return{name:e.exerciseName,prescribed:sets.length,repRange:'5-10',restSec:90,
+          targets:['Legacy'],skipped:!!e.skipped,notes:e.notes||'',sets};
+      });
+      const done=ex.reduce((a,e)=>a+e.sets.filter(s=>s.done).length,0);
+      return{id:w.id||String(Math.random()),date:w.date,startedAt:null,endedAt:null,
+        cycle:w.cycle||1,dayKey:'LEGACY',dayName:w.dayName||('Day '+w.dayNumber),
+        isDeload:false,status:done?'completed':'abandoned',exercises:ex,
+        totalVolume:w.totalVolume||0,duration:w.duration||0};
+    });
+    return{meta,sessions};
+  }
+  throw new Error('unknown');
+}
+$('wipe').onclick=async()=>{
+  if(!confirm('Erase every session and reset the cycle? This cannot be undone.'))return;
+  if(!confirm('Really erase everything?'))return;
+  const st=DB.h.transaction('sessions','readwrite').objectStore('sessions');st.clear();
+  META={version:2,currentCycle:1,cycleStartDate:today(),deloadIntervalWeeks:5};
+  await put('meta',META,'meta');
+  setTimeout(async()=>{await load();renderHome();renderSet();toast('Erased');},200);
+};
+
+/* ============ NAV ============ */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+  const nav=$('navBtn');
+  nav.textContent = id==='scSess' ? 'Home' : 'Log';
+  nav.onclick = ()=>{ if(id==='scSess'){show('scHome');renderHome();} else if(S){show('scSess');renderSession();} else toast('No session running'); };
+  window.scrollTo(0,0);
+  const sc=document.querySelector('#'+id+' .scroll');if(sc)sc.scrollTop=0;
+}
+$('toHist').onclick=()=>{renderHist();show('scHist')};
+$('toSet').onclick=()=>{renderSet();show('scSet')};
+$('histBack').onclick=()=>{show('scHome');renderHome()};
+$('setBack').onclick=()=>{show('scHome');renderHome()};
+
+/* ============ BOOT ============ */
+async function load(){
+  const m=await get('meta','meta');
+  if(m)META=Object.assign(META,m); else await put('meta',META,'meta');
+  const list=await all('sessions');
+  SESSIONS=list.filter(s=>s.status!=='active').sort((a,b)=>(a.date+a.id).localeCompare(b.date+b.id));
+  const active=list.find(s=>s.status==='active');
+  return active;
+}
+(async()=>{
+  try{await open();}catch(e){document.body.innerHTML='<div class="empty">This browser blocked local storage.<br>Open in Safari, not a private window.</div>';return;}
+  const active=await load();
+  renderHome();
+  if(active){
+    S=active;show('scSess');renderSession();
+    clearInterval(tick);
+    tick=setInterval(()=>{$('sessClock').textContent=fmt(Math.floor((Date.now()-S.startedAt)/1000));},1000);
+  }else{show('scHome');}
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
