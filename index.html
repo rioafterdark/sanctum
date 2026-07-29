@@ -52,9 +52,12 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 /* ---- header ---- */
 header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
   display:flex;align-items:center;gap:14px;background:var(--nox);position:sticky;top:0;z-index:20}
-.mark{width:38px;flex:0 0 38px}
+.mark{width:36px;flex:0 0 36px}
 .mark svg{width:100%;height:auto;display:block}
-.mark path{stroke:var(--ossa);stroke-width:2.4;fill:none;stroke-linecap:square}
+.mark path{fill:var(--ossa);stroke:none}
+.hsub .cist{display:inline-block;width:10px;margin-right:8px;vertical-align:-1px}
+.hsub .cist svg{width:100%;height:auto;display:block}
+.hsub .cist path{stroke:var(--dim);stroke-width:5;fill:none;stroke-linecap:square}
 .hgroup{flex:1;min-width:0}
 .wordmark{font-family:var(--serif);font-size:19px;letter-spacing:.34em;line-height:1;margin:0 0 5px}
 .hsub{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
@@ -263,39 +266,39 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 /* ============ PROGRAM ============ */
 const PROGRAM = {
   UA:{name:'Upper A', ex:[
+    ['Weighted Pull Ups',4,'5-10',180,['Back']],
     ['Incline Chest Flys',4,'5-10',180,['Chest']],
-    ['Weighted Pull Ups',3,'5-10',180,['Back']],
-    ['High to Low Cable Flys',3,'5-10',90,['Chest']],
-    ['Chest Supported Rows · Neutral',4,'5-10',180,['Back']],
+    ['T-Bar Row',3,'5-10',180,['Back']],
+    ['High to Low Cable Flys',3,'5-10',180,['Chest']],
     ['Cable Lateral Raises',2,'5-10',90,['Shoulders']],
-    ['Reverse Pec Deck',2,'5-10',90,['Shoulders']],
-    ['Seated DB Curls · Arm Support',2,'5-10',90,['Biceps']],
-    ['Seated Cable Tricep Push-Downs',2,'5-10',90,['Triceps']]]},
+    ['Seated Face Pulls',2,'5-10',90,['Shoulders']],
+    ['Bicep Cable Curls · Arm Support',2,'5-10',90,['Biceps']],
+    ['Sideways Single Arm Tricep Push-Downs',2,'5-10',90,['Triceps']]]},
   LA:{name:'Lower A', ex:[
-    ['Leg Extensions',4,'8-10',90,['Quads']],
-    ['Seated Leg Curls',3,'8-10',90,['Hamstrings']],
+    ['Leg Extensions',4,'8-10',120,['Quads']],
+    ['Seated Leg Curls',3,'8-10',120,['Hamstrings']],
     ['Bulgarian Split Squats',4,'6-8',180,['Quads','Glutes']],
-    ['45° Back Extensions',3,'10-12',90,['Glutes','Hamstrings']],
-    ['Step Ups / Kickbacks',2,'8-10',90,['Glutes']],
-    ['Adduction Machine',2,'10-12',90,['Adductors']],
-    ['Ab Crunch Machine',2,'10-12',90,['Abs']]]},
+    ['45° Extensions',3,'10-12',180,['Glutes','Hamstrings']],
+    ['Step Up / Kickbacks',2,'8-10',120,['Glutes']],
+    ['Adduction',2,'10-12',90,['Inner thigh']],
+    ['Ab Machine',2,'10-12',90,['Abs']]]},
   UB:{name:'Upper B', ex:[
-    ['Incline Machine Press',3,'5-10',180,['Chest']],
+    ['Low to High Flys',3,'5-10',180,['Chest']],
     ['Wide Grip Lat Pull-Down',3,'5-10',180,['Back']],
-    ['Pec Fly Machine',4,'5-10',90,['Chest']],
-    ['T-Bar Row',4,'5-10',180,['Back']],
-    ['DB Lateral Raises',2,'5-10',90,['Shoulders']],
-    ['Rear Delt Fly',2,'5-10',90,['Shoulders']],
-    ['Seated Hammer Curls · Arm Support',2,'5-10',90,['Biceps']],
-    ['Overhead Tricep Extensions',2,'5-10',90,['Triceps']]]},
+    ['Pec Fly Machine',4,'5-10',180,['Chest']],
+    ['Chest Supported Rows · Neutral Grip',4,'5-10',180,['Back']],
+    ['Machine Lateral Raises',2,'5-10',90,['Shoulders']],
+    ['Seated Rear Delt Fly',2,'5-10',90,['Shoulders']],
+    ['Preacher Hammer Curls',2,'5-10',90,['Biceps']],
+    ['Cable Tricep Push-Downs',2,'5-10',90,['Triceps']]]},
   LB:{name:'Lower B', ex:[
-    ['Leg Extensions',4,'8-10',90,['Quads']],
-    ['Seated Leg Curls',3,'8-10',90,['Hamstrings']],
-    ['Machine Hip Thrust',4,'6-8',90,['Glutes']],
-    ['Romanian Deadlift',3,'10-12',90,['Glutes','Hamstrings']],
-    ['Abduction Machine',2,'10-12',90,['Glutes']],
-    ['Adduction Machine',2,'10-12',90,['Adductors']],
-    ['Ab Crunch Machine',2,'10-12',90,['Abs']]]}
+    ['Leg Extensions',4,'8-10',120,['Quads']],
+    ['Seated Leg Curls',3,'8-10',120,['Hamstrings']],
+    ['Machine Hip Thrust',4,'6-8',180,['Glutes']],
+    ['Romanian Deadlift',3,'10-12',180,['Glutes','Hamstrings']],
+    ['Abduction',2,'10-12',90,['Glutes']],
+    ['Adduction',2,'10-12',90,['Inner thigh']],
+    ['Roman Chair Leg Raises',2,'10-12',90,['Abs']]]}
 };
 const ORDER=['UA','LA','UB','LB'];
 const TRACKED=[['Chest',14],['Back',14],['Glutes',14],['Quads',10],['Hamstrings',10],['Shoulders',8]];
@@ -346,6 +349,9 @@ function weekStart(){
   return d.toISOString().slice(0,10);
 }
 
+/* ---- wordmark letter: UnifrakturCook (SIL OFL 1.1), drawn as a path so no font loads ---- */
+const MARK='<svg viewBox="41 -1564 1414 1534" aria-hidden="true"><g transform="scale(1,-1)"><path d="M994 1475Q1087 1429 1183.5 1429.0Q1280 1429 1416 1502L1455 1455Q1307 1134 1095 1134Q1036 1134 939 1168Q670 1261 549 1261Q492 1261 435 1250Q279 1217 279 1066Q279 1012 307 965Q357 879 465.0 879.0Q573 879 659 1071Q752 1086 835 1086Q999 1086 1123 1028Q1310 941 1370 784Q1395 719 1395.0 632.5Q1395 546 1345 432Q1260 236 996 62Q947 30 885 30Q821 30 746 47Q546 89 376.0 200.0Q206 311 94 506Q41 595 41 703Q41 716 42 729Q77 1215 426 1509Q492 1565 608 1564Q802 1561 994 1475ZM322 769Q360 594 610 457Q799 354 962 354Q1016 354 1067 365Q1169 386 1222 445Q1280 509 1280.0 579.5Q1280 650 1222.5 717.0Q1165 784 1041 805Q1029 807 996.0 807.0Q963 807 887 778Q792 742 736 620Q727 620 718 620Q539 620 322 769Z"/></g></svg>';
+
 /* ============ CISTERCIAN NUMERAL ============ */
 const SEG={1:[[0,0,1,0]],2:[[0,1,1,1]],3:[[0,0,1,1]],4:[[0,1,1,0]],
   5:[[0,0,1,0],[0,1,1,0]],6:[[1,0,1,1]],7:[[0,0,1,0],[1,0,1,1]],
@@ -395,8 +401,8 @@ function best(setsArr){
 
 /* ============ HOME ============ */
 function renderHome(){
-  $('mark').innerHTML=cistercian(META.currentCycle);
-  $('hsub').textContent='Cycle '+META.currentCycle+' · Week '+weekOfCycle();
+  $('hsub').innerHTML='<span class="cist">'+cistercian(META.currentCycle)+'</span>'+
+    'Cycle '+META.currentCycle+' · Week '+weekOfCycle();
 
   $('deloadBox').innerHTML = isDeload()
     ? '<div class="deload"><div class="t">DELOAD WEEK</div><div class="d">Same movements, half the sets, stop 4–5 reps short. This week restores you; it is not meant to be hard.</div></div>'
@@ -686,6 +692,7 @@ async function load(){
 }
 (async()=>{
   try{await open();}catch(e){document.body.innerHTML='<div class="empty">This browser blocked local storage.<br>Open in Safari, not a private window.</div>';return;}
+  $('mark').innerHTML=MARK;
   const active=await load();
   renderHome();
   if(active){

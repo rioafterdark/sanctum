@@ -36,10 +36,17 @@ and there is no account or server.
 The trade-off: **delete the home-screen icon and the data goes with it.** Export a backup
 now and then — Settings → Export backup — and drop it in iCloud Drive.
 
+## Typeface credit
+
+The mark is the letter S from **UnifrakturCook**, licensed under the SIL Open Font
+License 1.1, free for commercial use. It is drawn into the page as an SVG path, so no
+font file is downloaded at runtime and the mark renders offline like everything else.
+If Sanctum ever goes commercial, the same licence covers garment printing.
+
 ## What changed from the old app
 
-- Routine is the 4-day Upper / Lower / Upper / Lower from Sanctum_V, with the
-  chest 14 / back 14 / glutes 13 weekly set balance intact.
+- Routine is your current 4-day Upper / Lower / Upper / Lower, with the revised
+  exercises and rest times. Weekly balance: chest 14, back 14, glutes 13, quads 10.
 - Every exercise shows what you lifted last time, so progressive overload at 0–1 RIR
   has an actual reference point instead of memory.
 - Rest timer starts automatically on each logged set, using the prescribed rest for that
