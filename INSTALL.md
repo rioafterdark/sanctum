@@ -36,12 +36,33 @@ and there is no account or server.
 The trade-off: **delete the home-screen icon and the data goes with it.** Export a backup
 now and then — Settings → Export backup — and drop it in iCloud Drive.
 
-## Typeface credit
+## Identity
 
-The mark is the letter S from **UnifrakturCook**, licensed under the SIL Open Font
-License 1.1, free for commercial use. It is drawn into the page as an SVG path, so no
-font file is downloaded at runtime and the mark renders offline like everything else.
-If Sanctum ever goes commercial, the same licence covers garment printing.
+Mark and wordmark are **traced from your own reference**, not set in a substitute typeface.
+I isolated the crimson pixels from the screenshot, upscaled and smoothed them, and ran the
+result through potrace; the vector reproduces the source at 98.2% pixel overlap for the S.
+Both live in the page as inline SVG paths, so nothing downloads at runtime and they render
+offline like everything else.
+
+Palette sampled from the same screenshot: crimson `#B92022`, gold `#CDAB58`, ground
+`#0A0A0C`. The gold lozenge sits at 53.4% across and 49.6% down the S, matching the
+reference. Gold is reserved for the volume figure and nothing else.
+
+Because the mark is now traced rather than set in UnifrakturCook, the SIL Open Font Licence
+no longer applies to it. It's your artwork, so nothing is owed — but if the original letter
+came from a commercial typeface, check that font's licence before putting the mark on
+merchandise.
+
+## Session summary and history
+
+Finishing a session shows the summary: mark, wordmark, *Progress vaulted.*, the volume in
+gold, then exercises / sets / duration, a Notes field and Save.
+
+**Save only commits the note.** The session itself is written the moment you press Finish,
+so quitting the app on the summary screen can never lose a workout.
+
+In **History**, tapping any session opens it in full — every exercise with each set as
+`weight × reps`, the set that set a record outlined in crimson, and your note at the end.
 
 ## Session card
 
