@@ -132,15 +132,25 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .exacts button:active{color:var(--ossa)}
 
 /* ---- rest timer ---- */
-#rest{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--crypt);
-  border-top:1px solid var(--sanguis);transform:translateY(101%);transition:transform .28s ease;
-  padding:14px 18px calc(14px + env(safe-area-inset-bottom))}
-#rest.up{transform:translateY(0)}
-#rest .row{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:16px}
-#rest .t{font-family:var(--mono);font-size:30px;letter-spacing:.02em;line-height:1;font-variant-numeric:tabular-nums}
-#rest .l{flex:1;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ash)}
-#rest button{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ash);padding:9px 11px;border:1px solid var(--edge)}
+#rest{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+  padding:20px;background:rgba(6,6,7,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  opacity:0;transition:opacity .2s ease}
+#rest.up{display:flex}
+#rest.in{opacity:1}
+#rest .box{position:relative;width:100%;max-width:330px;background:var(--crypt);
+  border:1px solid var(--sanguis);padding:26px 24px 22px;text-align:center;
+  transform:scale(.94);transition:transform .22s cubic-bezier(.2,.9,.3,1.2)}
+#rest.in .box{transform:scale(1)}
 #rest .pbar{position:absolute;left:0;top:0;height:2px;background:var(--sanguis);transition:width 1s linear}
+#rest .l{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ash);
+  margin-bottom:14px;line-height:1.5}
+#rest .t{font-family:var(--mono);font-size:62px;letter-spacing:.01em;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--ossa);margin-bottom:22px}
+#rest .acts{display:flex;gap:10px}
+#rest .acts button{flex:1;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ash);padding:13px 8px;border:1px solid var(--edge);background:var(--nox)}
+#rest .acts button:active{background:var(--cinis)}
+#rest .dismiss{margin-top:16px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
 
 /* ---- footer actions ---- */
 .foot{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(to top,var(--nox) 62%,transparent);
@@ -168,6 +178,23 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .note{font-size:11.5px;color:var(--dim);line-height:1.6;margin:16px 0 0}
 .empty{padding:44px 18px;text-align:center;color:var(--dim);font-size:12.5px;line-height:1.7}
 .danger{color:var(--sanguis)}
+/* ---- session summary + share card ---- */
+.bigstats{display:flex;gap:10px;margin:2px 0 24px}
+.bigstats div{flex:1}
+.bigstats .k{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:7px}
+.bigstats .v{font-family:var(--mono);font-size:19px;color:var(--ossa)}
+.rec{display:flex;align-items:baseline;gap:10px;padding:11px 0;border-bottom:1px solid var(--stone)}
+.rec .n3{flex:1;font-family:var(--serif);font-size:14.5px;line-height:1.3}
+.rec .g3{font-family:var(--mono);font-size:11px;color:var(--sanguis);flex:0 0 auto}
+.rec.first .g3{color:var(--ash)}
+#cardOv{position:fixed;inset:0;z-index:80;background:rgba(6,6,7,.975);display:none;
+  flex-direction:column;align-items:center;justify-content:center;padding:18px;
+  padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+#cardOv.on{display:flex}
+#cardImg{max-width:100%;max-height:64vh;border:1px solid var(--edge);display:block}
+.cardacts{display:flex;gap:9px;margin-top:17px;width:100%;max-width:450px}
+.cardacts .btn{padding:14px 4px;font-size:10px;letter-spacing:.08em}
+#cardHint{font-size:11px;color:var(--dim);margin:14px 0 0;text-align:center;max-width:350px;line-height:1.6}
 #toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,14px);z-index:60;
   background:var(--stone);border:1px solid var(--edge);padding:11px 17px;font-size:12px;
   opacity:0;transition:.25s;pointer-events:none;max-width:88vw;text-align:center}
@@ -194,7 +221,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
       <div class="vol">
         <div class="lbl" style="margin-bottom:12px">Hard sets · this week</div>
         <div id="volList"></div>
-        <p class="note">Shared-target exercises count a half set to each muscle. Targets: chest 14, back 14, glutes 14.</p>
+        <p class="note">Secondary muscles count a half set. Targets: chest 18, back 18, glutes 18, shoulders 9.</p>
       </div>
     </div>
     <div class="foot"><div class="in">
@@ -249,13 +276,37 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
     </div>
     <div class="foot"><div class="in"><button class="btn" id="setBack">Back</button></div></div>
   </section>
+  <!-- SESSION SUMMARY -->
+  <section class="screen" id="scDone">
+    <div class="scroll"><div class="sec" id="doneStats"></div></div>
+    <div class="foot"><div class="in">
+      <button class="btn" id="doneHome">Done</button>
+      <button class="btn pri" id="makeCard">Make card</button>
+    </div></div>
+  </section>
 </div>
 
-<div id="rest"><i class="pbar" id="restBar"></i><div class="row">
-  <div class="t" id="restT">0:00</div>
+<input type="file" id="photoIn" accept="image/*" hidden>
+<div id="cardOv">
+  <img id="cardImg" alt="Session card">
+  <div class="cardacts">
+    <button class="btn" id="cardClose">Close</button>
+    <button class="btn" id="cardSwap">Photo</button>
+    <button class="btn" id="cardFmtBtn">9:16</button>
+    <button class="btn pri" id="cardShare">Share</button>
+  </div>
+  <p id="cardHint"></p>
+</div>
+
+<div id="rest" role="dialog" aria-label="Rest timer"><div class="box">
+  <i class="pbar" id="restBar"></i>
   <div class="l" id="restL">Rest</div>
-  <button id="rest30">+30s</button>
-  <button id="restSkip">Skip</button>
+  <div class="t" id="restT">0:00</div>
+  <div class="acts">
+    <button id="rest30">+30s</button>
+    <button id="restSkip">Skip</button>
+  </div>
+  <div class="dismiss">Tap outside to hide · timer keeps running</div>
 </div></div>
 
 <div id="toast"></div>
@@ -265,43 +316,33 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 
 /* ============ PROGRAM ============ */
 const PROGRAM = {
-  UA:{name:'Upper A', ex:[
+  D1:{name:'Day I', ex:[
+    ['Incline Machine Press',4,'5-10',180,['Chest']],
+    ['Incline Chest Flys',2,'5-10',120,['Chest']],
     ['Weighted Pull Ups',4,'5-10',180,['Back']],
-    ['Incline Chest Flys',4,'5-10',180,['Chest']],
-    ['T-Bar Row',3,'5-10',180,['Back']],
-    ['High to Low Cable Flys',3,'5-10',180,['Chest']],
-    ['Cable Lateral Raises',2,'5-10',90,['Shoulders']],
-    ['Seated Face Pulls',2,'5-10',90,['Shoulders']],
-    ['Bicep Cable Curls · Arm Support',2,'5-10',90,['Biceps']],
-    ['Sideways Single Arm Tricep Push-Downs',2,'5-10',90,['Triceps']]]},
-  LA:{name:'Lower A', ex:[
-    ['Leg Extensions',4,'8-10',120,['Quads']],
-    ['Seated Leg Curls',3,'8-10',120,['Hamstrings']],
-    ['Bulgarian Split Squats',4,'6-8',180,['Quads','Glutes']],
-    ['45° Extensions',3,'10-12',180,['Glutes','Hamstrings']],
-    ['Step Up / Kickbacks',2,'8-10',120,['Glutes']],
-    ['Adduction',2,'10-12',90,['Inner thigh']],
-    ['Ab Machine',2,'10-12',90,['Abs']]]},
-  UB:{name:'Upper B', ex:[
-    ['Low to High Flys',3,'5-10',180,['Chest']],
-    ['Wide Grip Lat Pull-Down',3,'5-10',180,['Back']],
-    ['Pec Fly Machine',4,'5-10',180,['Chest']],
-    ['Chest Supported Rows · Neutral Grip',4,'5-10',180,['Back']],
-    ['Machine Lateral Raises',2,'5-10',90,['Shoulders']],
-    ['Seated Rear Delt Fly',2,'5-10',90,['Shoulders']],
-    ['Preacher Hammer Curls',2,'5-10',90,['Biceps']],
-    ['Cable Tricep Push-Downs',2,'5-10',90,['Triceps']]]},
-  LB:{name:'Lower B', ex:[
-    ['Leg Extensions',4,'8-10',120,['Quads']],
-    ['Seated Leg Curls',3,'8-10',120,['Hamstrings']],
-    ['Machine Hip Thrust',4,'6-8',180,['Glutes']],
-    ['Romanian Deadlift',3,'10-12',180,['Glutes','Hamstrings']],
-    ['Abduction',2,'10-12',90,['Glutes']],
-    ['Adduction',2,'10-12',90,['Inner thigh']],
-    ['Roman Chair Leg Raises',2,'10-12',90,['Abs']]]}
+    ['Chest Supported Rows · Neutral Grip',2,'5-10',120,['Back']],
+    ['Machine Hip Thrust',4,'6-10',180,['Glutes']],
+    ['Abduction Machine',2,'10-12',120,['Glutes']],
+    ['Cable Lateral Raises',3,'5-10',90,['Shoulders']]]},
+  D2:{name:'Day II', ex:[
+    ['Wide Grip Lat Pull-Down',4,'5-10',180,['Back']],
+    ['T-Bar Row',2,'5-10',120,['Back']],
+    ['Bulgarian Split Squats',4,'6-8',180,['Glutes','Quads']],
+    ['45° Back Extensions',2,'10-12',120,['Glutes','Hamstrings']],
+    ['Chest Press Machine',4,'5-10',180,['Chest']],
+    ['Pec Fly Machine',2,'5-10',120,['Chest']],
+    ['Seated Face Pulls',3,'5-10',90,['Shoulders']]]},
+  D3:{name:'Day III', ex:[
+    ['Romanian Deadlift',4,'6-10',180,['Glutes','Hamstrings']],
+    ['Leg Press · High & Wide',2,'10-12',120,['Glutes','Quads']],
+    ['Dip Machine',4,'5-10',180,['Chest']],
+    ['High to Low Cable Flys',2,'5-10',120,['Chest']],
+    ['Seated Cable Row · Wide',4,'5-10',180,['Back']],
+    ['Straight-Arm Cable Pulldown',2,'5-10',120,['Back']],
+    ['Machine Lateral Raises',3,'5-10',90,['Shoulders']]]}
 };
-const ORDER=['UA','LA','UB','LB'];
-const TRACKED=[['Chest',14],['Back',14],['Glutes',14],['Quads',10],['Hamstrings',10],['Shoulders',8]];
+const ORDER=['D1','D2','D3'];
+const TRACKED=[['Chest',18],['Back',18],['Glutes',18],['Shoulders',9]];
 
 /* ============ DB ============ */
 const DB={h:null};
@@ -378,8 +419,10 @@ function setsByTarget(from){
     s.exercises.forEach(e=>{
       const done=e.sets.filter(x=>x.done).length;
       if(!done||!e.targets)return;
-      const share=1/e.targets.length;
-      e.targets.forEach(t=>{map[t]=(map[t]||0)+done*share;});
+      /* first target is the muscle the exercise is FOR — full credit. anything
+         after it is secondary involvement — half. An even split would have made
+         a hip thrust worth half a glute set. */
+      e.targets.forEach((t,i)=>{map[t]=(map[t]||0)+done*(i===0?1:0.5);});
     });
   });
   return map;
@@ -537,26 +580,45 @@ $('exList').addEventListener('click',ev=>{
   save();renderSession();
 });
 
-/* ---- rest timer (survives lock: driven by timestamp) ---- */
+/* ---- rest timer: centred modal, driven by a timestamp so it survives a screen lock ---- */
+function showRest(){
+  const r=$('rest');
+  r.classList.add('up');
+  requestAnimationFrame(()=>r.classList.add('in'));
+}
+function hideRest(){
+  const r=$('rest');
+  r.classList.remove('in');
+  setTimeout(()=>r.classList.remove('up'),200);
+}
 function startRest(sec,label){
   restTotal=sec;restEnd=Date.now()+sec*1000;
   $('restL').textContent=label;
-  $('rest').classList.add('up');
+  showRest();
   clearInterval(restTick);restTick=setInterval(paintRest,250);paintRest();
 }
 function paintRest(){
   const left=Math.ceil((restEnd-Date.now())/1000);
   if(left<=0){
     $('restT').textContent='0:00';$('restBar').style.width='0%';
-    clearInterval(restTick);buzz([90,60,90]);
-    setTimeout(()=>$('rest').classList.remove('up'),1400);return;
+    clearInterval(restTick);restTick=null;buzz([90,60,90]);
+    setTimeout(hideRest,1200);return;
   }
   $('restT').textContent=fmt(left);
   $('restBar').style.width=(left/restTotal*100)+'%';
 }
 $('rest30').onclick=()=>{restEnd+=30000;restTotal+=30;paintRest();};
-$('restSkip').onclick=()=>{clearInterval(restTick);$('rest').classList.remove('up');};
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&restEnd>Date.now())paintRest();});
+$('restSkip').onclick=()=>{clearInterval(restTick);restTick=null;restEnd=0;hideRest();};
+/* tapping the backdrop hides the dialog but leaves the clock running, so a mistyped
+   rep can be corrected mid-rest without losing the countdown */
+$('rest').addEventListener('click',ev=>{if(ev.target===$('rest'))hideRest();});
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden)return;
+  if(restEnd>Date.now()){
+    paintRest();
+    if(!restTick)restTick=setInterval(paintRest,250);
+  }
+});
 
 /* ---- wake lock (best effort) ---- */
 let wake=null;
@@ -575,9 +637,9 @@ $('finish').onclick=async()=>{
   await put('sessions',S);
   await load();
   clearInterval(tick);releaseWake();
-  const t=S.totalVolume;S=null;
-  show('scHome');renderHome();
-  toast(done+' sets · '+Math.round(t).toLocaleString()+' kg moved');
+  LAST=S; S=null; cardPhoto=null;
+  renderHome();
+  renderDone(); show('scDone');
 };
 $('abandon').onclick=async()=>{
   if(!confirm('Discard this session? Nothing will be saved.'))return;
@@ -587,6 +649,260 @@ $('abandon').onclick=async()=>{
 };
 function releaseWake(){try{wake&&wake.release();wake=null}catch(e){}}
 async function save(){if(S){await put('sessions',S);}updateProg();}
+
+/* ============ RECORDS ============ */
+/* Epley estimate: folds weight and reps into one number, so +1 rep counts as
+   progress the same way +2.5 kg does. Both are how you advance at 0-1 RIR. */
+function e1rm(w,r){return w*(1+r/30);}
+function dur(sec){
+  const h=Math.floor(sec/3600), m=Math.round((sec%3600)/60);
+  return h ? h+'h '+m+'min' : m+'min';
+}
+function recordsFor(sess){
+  const out=[];
+  sess.exercises.forEach(e=>{
+    const done=e.sets.filter(s=>s.done&&s.weight>0&&s.reps>0);
+    if(!done.length)return;
+    let pBest=0,pW=0,seen=false;
+    SESSIONS.forEach(s=>{
+      if(s.id===sess.id||s.status!=='completed'||s.date>sess.date)return;
+      const pe=s.exercises.find(x=>x.name===e.name);
+      if(!pe)return;
+      pe.sets.filter(x=>x.done&&x.weight>0&&x.reps>0).forEach(x=>{
+        seen=true;
+        pBest=Math.max(pBest,e1rm(x.weight,x.reps));
+        pW=Math.max(pW,x.weight);
+      });
+    });
+    const nBest=Math.max.apply(null,done.map(x=>e1rm(x.weight,x.reps)));
+    const nW=Math.max.apply(null,done.map(x=>x.weight));
+    if(!seen)                    out.push({name:e.name,kind:'first',to:nBest});
+    else if(nBest>pBest+0.05)    out.push({name:e.name,kind:'e1rm',from:pBest,to:nBest});
+    else if(nW>pW)               out.push({name:e.name,kind:'weight',from:pW,to:nW});
+  });
+  return out;
+}
+
+/* ============ SESSION SUMMARY ============ */
+let LAST=null, LASTREC=[], cardPhoto=null, cardUrl=null;
+function renderDone(){
+  const s=LAST;
+  LASTREC=recordsFor(s);
+  const sets=s.exercises.reduce((a,e)=>a+e.sets.filter(x=>x.done).length,0);
+  let h='<h4>'+s.dayName+(s.isDeload?' · deload':'')+'</h4>'+
+    '<div class="bigstats">'+
+      '<div><div class="k">Duration</div><div class="v">'+dur(s.duration)+'</div></div>'+
+      '<div><div class="k">Volume</div><div class="v">'+Math.round(s.totalVolume).toLocaleString()+' kg</div></div>'+
+      '<div><div class="k">Records</div><div class="v">'+LASTREC.length+'</div></div>'+
+    '</div>'+
+    '<div class="lbl" style="margin:4px 0 10px">'+sets+' sets logged</div>';
+  if(LASTREC.length){
+    h+='<div style="margin-top:18px"><div class="lbl" style="margin-bottom:6px">Records</div>';
+    LASTREC.forEach(r=>{
+      const g = r.kind==='first' ? 'first logged'
+              : r.kind==='weight' ? '+'+(Math.round((r.to-r.from)*10)/10)+' kg'
+              : '+'+(Math.round((r.to-r.from)*10)/10)+' est. 1RM';
+      h+='<div class="rec'+(r.kind==='first'?' first':'')+'"><span class="n3">'+r.name+'</span><span class="g3">'+g+'</span></div>';
+    });
+    h+='</div>';
+  }
+  $('doneStats').innerHTML=h;
+}
+$('doneHome').onclick=()=>{cardPhoto=null;show('scHome');renderHome();};
+
+/* ============ SHARE CARD ============ */
+let CW=1080, CH=1920;                 /* 9:16 story by default */
+let cardFmt='story';                  /* 'story' 9:16 | 'post' 4:5 */
+function tracked(g,t,x,y,sp){let cx=x;for(const c of t){g.fillText(c,cx,y);cx+=g.measureText(c).width+sp;}return cx-sp-x;}
+function twidth(g,t,sp){let w=0;for(const c of t)w+=g.measureText(c).width+sp;return w-sp;}
+function shadow(g,on){
+  if(on){g.shadowColor='rgba(0,0,0,0.78)';g.shadowBlur=26;g.shadowOffsetY=3;}
+  else{g.shadowColor='transparent';g.shadowBlur=0;g.shadowOffsetY=0;}
+}
+function markImg(){
+  return new Promise((res,rej)=>{
+    const svg=MARK.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg" width="420" height="456" fill="#E8E2D5"');
+    const im=new Image();
+    im.onload=()=>res(im); im.onerror=rej;
+    im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  });
+}
+function fileToImg(f){
+  return new Promise((res,rej)=>{
+    const u=URL.createObjectURL(f), im=new Image();
+    im.onload=()=>{res(im);setTimeout(()=>URL.revokeObjectURL(u),3000);};
+    im.onerror=()=>{URL.revokeObjectURL(u);rej();};
+    im.src=u;
+  });
+}
+async function buildCard(){
+  CH = cardFmt==='story' ? 1920 : 1350;
+  const cv=document.createElement('canvas');
+  cv.width=CW; cv.height=CH;
+  const g=cv.getContext('2d');
+  g.fillStyle='#0B0B0C'; g.fillRect(0,0,CW,CH);
+  g.textBaseline='alphabetic';
+
+  let bmp=null;
+  if(cardPhoto){
+    try{bmp=await createImageBitmap(cardPhoto,{imageOrientation:'from-image'});}
+    catch(e){try{bmp=await createImageBitmap(cardPhoto);}catch(e2){try{bmp=await fileToImg(cardPhoto);}catch(e3){}}}
+  }
+  if(bmp){
+    const sc=Math.max(CW/bmp.width,CH/bmp.height), w=bmp.width*sc, h=bmp.height*sc;
+    g.drawImage(bmp,(CW-w)/2,(CH-h)/2,w,h);
+    /* light touch — the photo stays the subject. Just enough at the very bottom
+       to stop white gym walls eating the type; the shadows do the rest. */
+    /* fixed pixel spans, not fractions of height — the type sits at fixed
+       offsets, so a fraction would protect 9:16 and under-protect 4:5 */
+    let gr=g.createLinearGradient(0,CH-680,0,CH);
+    gr.addColorStop(0,'rgba(11,11,12,0)');
+    gr.addColorStop(1,'rgba(11,11,12,0.78)');
+    g.fillStyle=gr; g.fillRect(0,CH-680,CW,680);
+    /* without this the wordmark rides bare photo and a white wall erases it */
+    gr=g.createLinearGradient(0,0,0,300);
+    gr.addColorStop(0,'rgba(11,11,12,0.68)');
+    gr.addColorStop(1,'rgba(11,11,12,0)');
+    g.fillStyle=gr; g.fillRect(0,0,CW,300);
+    await layoutOverPhoto(g);
+  } else {
+    await layoutPlain(g);
+  }
+  return new Promise(r=>cv.toBlob(r,'image/jpeg',0.94));
+}
+
+/* the default: an overlay sitting on your photo */
+async function layoutOverPhoto(g){
+  const s=LAST, M=64;
+  shadow(g,true);
+
+  /* small lockup, top left — deliberately minor against the image */
+  try{const mi=await markImg(); g.drawImage(mi,M,M+4,58,63);}catch(e){}
+  g.fillStyle='#E8E2D5'; g.font='600 30px -apple-system,"Helvetica Neue",sans-serif';
+  tracked(g,'SANCTVM',M+76,M+48,9);
+
+  /* bottom block */
+  let y=CH-M-40;
+  g.fillStyle='#8B8780'; g.font='600 21px -apple-system,"Helvetica Neue",sans-serif';
+  tracked(g,'ORA · ET · LABORA',M,y,4.2);
+
+  y-=74;
+  const cols=[['Duration',dur(s.duration)],
+              ['Volume',Math.round(s.totalVolume).toLocaleString()+' kg'],
+              ['Records',String(LASTREC.length)]];
+  const cw=Math.floor((CW-M*2)/3);
+  cols.forEach((c,i)=>{
+    const x=M+cw*i;
+    g.fillStyle='#E8E2D5'; g.font='500 46px ui-monospace,"SF Mono",Menlo,monospace';
+    g.fillText(c[1],x,y);
+    g.fillStyle='#C8C2B6'; g.font='600 19px -apple-system,"Helvetica Neue",sans-serif';
+    tracked(g,c[0].toUpperCase(),x,y-58,3.8);
+  });
+
+  y-=132;
+  g.fillStyle='rgba(232,226,213,0.35)'; g.fillRect(M,y,CW-M*2,1.5);
+
+  y-=34;
+  g.fillStyle='#C8C2B6'; g.font='600 22px -apple-system,"Helvetica Neue",sans-serif';
+  tracked(g,s.date+(s.isDeload?'  ·  DELOAD':''),M,y,4.4);
+
+  y-=62;
+  g.fillStyle='#E8E2D5'; g.font='400 86px "Iowan Old Style",Charter,Georgia,serif';
+  g.fillText(s.dayName,M,y);
+
+  shadow(g,false);
+}
+
+/* fallback when no photo is attached */
+async function layoutPlain(g){
+  const s=LAST, mid=CW/2, y0=Math.round((CH-1350)/2);
+  const ctr=(t,x,y,sp)=>{const w=twidth(g,t,sp);return tracked(g,t,x-w/2,y,sp);};
+  g.strokeStyle='#3A3A42'; g.lineWidth=2;
+  g.strokeRect(44,44+y0,CW-88,1350-88);
+  try{
+    const mi=await markImg(); const h=152, w=h*(1414/1534);
+    g.drawImage(mi,mid-w/2,116+y0,w,h);
+  }catch(e){}
+  g.fillStyle='#E8E2D5'; g.font='600 40px -apple-system,"Helvetica Neue",sans-serif';
+  ctr('SANCTVM',mid,342+y0,13);
+  g.fillStyle='#3A3A42'; g.fillRect(mid-80,378+y0,160,1);
+  g.fillStyle='#E8E2D5'; g.font='400 98px "Iowan Old Style",Charter,Georgia,serif';
+  let w=g.measureText(s.dayName).width; g.fillText(s.dayName,mid-w/2,486+y0);
+  g.fillStyle='#8B8780'; g.font='600 23px -apple-system,"Helvetica Neue",sans-serif';
+  ctr(s.date+(s.isDeload?'  ·  DELOAD':''),mid,536+y0,4.6);
+  const cols=[['Duration',dur(s.duration)],
+              ['Volume',Math.round(s.totalVolume).toLocaleString()+' kg'],
+              ['Records',String(LASTREC.length)]];
+  const cwid=(CW-260)/3;
+  cols.forEach((c,i)=>{
+    const x=130+cwid*i+cwid/2;
+    g.fillStyle='#8B8780'; g.font='600 22px -apple-system,"Helvetica Neue",sans-serif';
+    ctr(c[0].toUpperCase(),x,668+y0,4.4);
+    g.fillStyle='#E8E2D5'; g.font='500 54px ui-monospace,"SF Mono",Menlo,monospace';
+    const vw=g.measureText(c[1]).width; g.fillText(c[1],x-vw/2,734+y0);
+  });
+  g.fillStyle='#3A3A42'; g.fillRect(130,800+y0,CW-260,1);
+  g.fillStyle='#8B8780'; g.font='600 21px -apple-system,"Helvetica Neue",sans-serif';
+  if(LASTREC.length){
+    ctr('RECORDS',mid,856+y0,4.4);
+    LASTREC.slice(0,6).forEach((r,i)=>{
+      const y=920+y0+i*52;
+      const gain = r.kind==='first' ? 'first logged'
+                 : '+'+(Math.round((r.to-r.from)*10)/10)+(r.kind==='weight'?' kg':' 1RM');
+      g.fillStyle='#E8E2D5'; g.font='400 31px "Iowan Old Style",Charter,Georgia,serif';
+      let n=r.name; while(g.measureText(n).width>CW-470 && n.length>6) n=n.slice(0,-2);
+      if(n!==r.name) n=n.trim()+'…';
+      g.fillText(n,130,y);
+      g.fillStyle=r.kind==='first'?'#5E5B56':'#8C1626';
+      g.font='500 26px ui-monospace,"SF Mono",Menlo,monospace';
+      const gw=g.measureText(gain).width; g.fillText(gain,CW-130-gw,y);
+    });
+    if(LASTREC.length>6){
+      g.fillStyle='#5E5B56'; g.font='600 20px -apple-system,"Helvetica Neue",sans-serif';
+      ctr('AND '+(LASTREC.length-6)+' MORE',mid,920+y0+6*52+8,4);
+    }
+  } else {
+    ctr('NO RECORDS THIS SESSION',mid,900+y0,4.4);
+  }
+  g.fillStyle='#8B8780'; g.font='600 22px -apple-system,"Helvetica Neue",sans-serif';
+  ctr('ORA · ET · LABORA',mid,1268+y0,4.6);
+}
+
+async function openCard(){
+  toast('Building card…');
+  try{
+    const blob=await buildCard();
+    if(cardUrl)URL.revokeObjectURL(cardUrl);
+    cardUrl=URL.createObjectURL(blob);
+    $('cardImg').src=cardUrl;
+    $('cardOv')._blob=blob;
+    const can = navigator.canShare && navigator.canShare({files:[new File([blob],'x.jpg',{type:'image/jpeg'})]});
+    $('cardSwap').textContent = cardPhoto ? 'Retake' : 'Add photo';
+    $('cardFmtBtn').textContent = cardFmt==='story' ? '9:16' : '4:5';
+    $('cardHint').textContent = can
+      ? 'Share opens the system sheet — Save Image, Instagram, Messages.'
+      : 'Press and hold the image, then Save to Photos.';
+    $('cardOv').classList.add('on');
+  }catch(e){toast('Could not build the card');}
+}
+$('makeCard').onclick=()=>{if(cardPhoto)openCard();else $('photoIn').click();};
+$('cardSwap').onclick=()=>$('photoIn').click();
+$('cardFmtBtn').onclick=()=>{cardFmt = cardFmt==='story' ? 'post' : 'story'; openCard();};
+$('photoIn').onchange=ev=>{
+  const f=ev.target.files[0]; ev.target.value='';
+  if(f){cardPhoto=f;openCard();}
+  else if(cardPhoto){openCard();}
+};
+$('cardClose').onclick=()=>$('cardOv').classList.remove('on');
+$('cardShare').onclick=async()=>{
+  const blob=$('cardOv')._blob; if(!blob)return;
+  const file=new File([blob],'sanctum-'+LAST.date+'.jpg',{type:'image/jpeg'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:LAST.dayName});return;}
+    catch(e){if(e&&e.name==='AbortError')return;}
+  }
+  toast('Press and hold the image to save it');
+};
 
 /* ============ HISTORY ============ */
 function renderHist(){
