@@ -78,10 +78,6 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .day .ago{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);text-align:right;flex:0 0 auto}
 .day.stale .ago{color:var(--sanguis)}
 
-/* ---- deload banner ---- */
-.deload{margin:18px 18px 0;border:1px solid var(--viola);background:var(--viola-lo);padding:13px 15px}
-.deload .t{font-family:var(--serif);font-size:15px;letter-spacing:.14em;margin-bottom:5px}
-.deload .d{font-size:11.5px;color:#BFB3D0;line-height:1.5}
 
 /* ---- weekly volume ---- */
 .vol{padding:22px 18px 10px}
@@ -111,6 +107,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .last{margin:9px 0 0 26px;font-family:var(--mono);font-size:11.5px;color:var(--ash)}
 .last b{color:var(--ossa);font-weight:400}
 .last .none{color:var(--dim)}
+.last .oth{color:var(--dim);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
 
 .sets{margin:13px 0 0 26px;display:flex;flex-direction:column;gap:8px}
 .set{display:flex;align-items:center;gap:9px}
@@ -158,7 +155,8 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 /* ---- footer actions ---- */
 .foot{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(to top,var(--nox) 62%,transparent);
   padding:22px 18px calc(16px + env(safe-area-inset-bottom))}
-.foot .in{max-width:560px;margin:0 auto;display:flex;gap:10px}
+.foot .in{max-width:560px;margin:0 auto;display:flex;gap:8px}
+.foot .in .btn{padding:16px 6px;letter-spacing:.12em}
 .btn{flex:1;padding:16px;border:1px solid var(--edge);background:var(--crypt);
   font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;text-align:center;font-weight:600}
 .btn:active{background:var(--cinis)}
@@ -246,6 +244,30 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .dtSet.pr{border-color:var(--crimson);color:var(--crimson)}
 .dtEx.sk h5{color:var(--dim);text-decoration:line-through}
 .dtNote{margin:10px 0 0;font-size:13px;color:var(--ash);line-height:1.55;font-style:italic}
+/* ---- calendar ---- */
+.calTop{display:flex;align-items:center;gap:14px;padding:20px 18px 14px}
+.calTop h4{flex:1;font-family:var(--serif);font-size:17px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ossa);font-weight:400;margin:0;text-align:center}
+.calNav{padding:10px 14px;border:1px solid var(--edge);color:var(--ash);font-size:14px;line-height:1}
+.calNav:active{background:var(--cinis)}
+.calGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;padding:0 18px}
+.calDow{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+  text-align:center;padding-bottom:7px}
+.calCell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;border:1px solid transparent;font-family:var(--mono);font-size:12.5px;color:var(--dim);
+  background:transparent}
+.calCell.mo{color:var(--ash)}
+.calCell.today{border-color:var(--edge);color:var(--ossa)}
+.calCell.has{background:var(--crypt);border-color:var(--crimson);color:var(--ossa)}
+.calCell.has:active{background:var(--cinis)}
+.calDot{display:flex;gap:2.5px;height:4px}
+.calDot i{width:4px;height:4px;background:var(--crimson);display:block}
+.calSum{padding:20px 18px 6px;display:flex;gap:24px}
+.calSum div{text-align:left}
+.calSum .k{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:6px}
+.calSum .v{font-family:var(--mono);font-size:19px;color:var(--ossa)}
+.calPick{padding:8px 18px 0}
+.calPick .lbl{margin-bottom:8px}
 #toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,14px);z-index:60;
   background:var(--stone);border:1px solid var(--edge);padding:11px 17px;font-size:12px;
   opacity:0;transition:.25s;pointer-events:none;max-width:88vw;text-align:center}
@@ -259,7 +281,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
     <div class="mark" id="mark"></div>
     <div class="hgroup">
       <div class="wordmark" id="wordmark"></div>
-      <div class="hsub" id="hsub">Ora · et · Labora</div>
+      <div class="hsub" id="hsub">Per · aspera · ad · astra</div>
     </div>
     <button class="hbtn" id="navBtn">Log</button>
   </header>
@@ -267,7 +289,6 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
   <!-- HOME -->
   <section class="screen on" id="scHome">
     <div class="scroll">
-      <div id="deloadBox"></div>
       <div class="days" id="days"></div>
       <div class="vol">
         <div class="lbl" style="margin-bottom:12px">Hard sets · this week</div>
@@ -276,6 +297,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
       </div>
     </div>
     <div class="foot"><div class="in">
+      <button class="btn" id="toCal">Calendar</button>
       <button class="btn" id="toHist">History</button>
       <button class="btn" id="toSet">Settings</button>
     </div></div>
@@ -312,7 +334,6 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
         <h4>Cycle</h4>
         <div class="field"><label class="lbl">Current cycle</label><input type="number" id="fCycle" min="1" inputmode="numeric"></div>
         <div class="field"><label class="lbl">Cycle start date</label><input type="date" id="fStart"></div>
-        <div class="field"><label class="lbl">Deload every (weeks)</label><input type="number" id="fDeload" min="2" max="12" inputmode="numeric"></div>
         <button class="btn" id="saveMeta" style="width:100%">Save cycle</button>
       </div>
       <hr class="rule" style="margin:26px 18px">
@@ -345,6 +366,22 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
       <button class="btn" id="makeCard">Card</button>
       <button class="btn save" id="doneHome">Save</button>
     </div></div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section class="screen" id="scCal">
+    <div class="scroll">
+      <div class="calTop">
+        <button class="calNav" id="calPrev">‹</button>
+        <h4 id="calTitle">—</h4>
+        <button class="calNav" id="calNext">›</button>
+      </div>
+      <div class="calGrid" id="calDow"></div>
+      <div class="calGrid" id="calGrid"></div>
+      <div class="calSum" id="calSum"></div>
+      <div class="calPick" id="calPick"></div>
+    </div>
+    <div class="foot"><div class="in"><button class="btn" id="calBack">Back</button></div></div>
   </section>
 
   <!-- HISTORY DETAIL -->
@@ -394,20 +431,20 @@ const PROGRAM = {
     ['Incline Chest Flys',3,'5-10',180,['Chest']],
     ['Weighted Pull Ups',2,'5-10',180,['Back']],
     ['Neutral Chest Supported Rows',2,'5-10',180,['Back']],
-    ['Reverse V Machine Squats',2,'5-10',180,['Glutes']],
+    ['Machine Hip Thrust',2,'10-12',180,['Glutes']],
     ['Abduction Machine',2,'10-12',180,['Glutes']]]},
   D2:{name:'Day II', ex:[
     ['Dumbbell Y-Raises',3,'5-10',180,['Shoulders']],
     ['Wide Grip Lat Pull-Down',3,'5-10',180,['Back']],
     ['T-Bar Row',3,'5-10',180,['Back']],
     ['Bulgarian Split Squats',2,'5-10',180,['Glutes']],
-    ['45° Back Extensions',2,'10-12',180,['Glutes']],
+    ['Machine Hip Thrust',2,'8-10',180,['Glutes']],
     ['Chest Press Machine',2,'5-10',180,['Chest']],
     ['Pec Fly Machine',2,'5-10',180,['Chest']]]},
   D3:{name:'Day III', ex:[
     ['Machine Lateral Raises',3,'5-10',180,['Shoulders']],
-    ['Machine Hip Thrust',3,'6-10',180,['Glutes']],
-    ['Romanian Deadlift',3,'6-10',180,['Glutes']],
+    ['Machine Hip Thrust',3,'5-10',180,['Glutes']],
+    ['Romanian Deadlift',3,'5-10',180,['Glutes']],
     ['Dip Machine',2,'5-10',180,['Chest']],
     ['High to Low Cable Flys',2,'5-10',180,['Chest']],
     ['Pronated Chest Supported Rows',2,'5-10',180,['Back']],
@@ -436,7 +473,7 @@ function all(store){return new Promise((res,rej)=>{const r=tx(store,'readonly').
 function del(store,key){return new Promise((res,rej)=>{const r=tx(store,'readwrite').delete(key);r.onsuccess=()=>res();r.onerror=()=>rej(r.error);});}
 
 /* ============ STATE ============ */
-let META={version:2,currentCycle:1,cycleStartDate:'2026-07-02',deloadIntervalWeeks:5};
+let META={version:3,currentCycle:1,cycleStartDate:'2026-07-02'};
 let SESSIONS=[];
 let S=null;              // active session
 let tick=null, restEnd=0, restTotal=0, restTick=null;
@@ -454,10 +491,6 @@ function weekOfCycle(){
   const st=new Date(META.cycleStartDate+'T00:00:00');
   const now=new Date(today()+'T00:00:00');
   return Math.floor((now-st)/6048e5)+1;
-}
-function isDeload(){
-  const iv=META.deloadIntervalWeeks;
-  return iv>1 && weekOfCycle()%iv===0;
 }
 function weekStart(){
   const d=new Date(today()+'T00:00:00');
@@ -504,16 +537,22 @@ function setsByTarget(from){
   });
   return map;
 }
-function lastFor(exName,excludeId){
-  for(let i=SESSIONS.length-1;i>=0;i--){
-    const s=SESSIONS[i];
-    if(s.id===excludeId||s.status!=='completed')continue;
-    const e=s.exercises.find(x=>canon(x.name)===canon(exName));
-    if(!e)continue;
-    const done=e.sets.filter(x=>x.done);
-    if(done.length)return{date:s.date,sets:done};
-  }
-  return null;
+/* Hip thrust now runs on all three days at three rep ranges, so the most recent
+   log is often the wrong comparison. Prefer the same day slot; fall back to any. */
+function lastFor(exName,excludeId,dayKey){
+  const scan=(needDay)=>{
+    for(let i=SESSIONS.length-1;i>=0;i--){
+      const s=SESSIONS[i];
+      if(s.id===excludeId||s.status!=='completed')continue;
+      if(needDay&&s.dayKey!==dayKey)continue;
+      const e=s.exercises.find(x=>canon(x.name)===canon(exName));
+      if(!e)continue;
+      const done=e.sets.filter(x=>x.done);
+      if(done.length)return{date:s.date,sets:done,sameDay:needDay};
+    }
+    return null;
+  };
+  return (dayKey&&scan(true))||scan(false);
 }
 function best(setsArr){
   return setsArr.reduce((m,x)=>Math.max(m,(x.weight||0)*(x.reps||0)),0);
@@ -524,9 +563,6 @@ function renderHome(){
   $('hsub').innerHTML='<span class="cist">'+cistercian(META.currentCycle)+'</span>'+
     'Cycle '+META.currentCycle+' · Week '+weekOfCycle();
 
-  $('deloadBox').innerHTML = isDeload()
-    ? '<div class="deload"><div class="t">DELOAD WEEK</div><div class="d">Same movements, half the sets, stop 4–5 reps short. This week restores you; it is not meant to be hard.</div></div>'
-    : '';
 
   const d=$('days');d.innerHTML='';
   ORDER.forEach((k,i)=>{
@@ -555,7 +591,6 @@ function renderHome(){
 }
 
 /* ============ SESSION ============ */
-function deloadSets(n){return isDeload()?Math.max(1,Math.ceil(n/2)):n;}
 function startSession(key){
   const p=PROGRAM[key];
   S={
@@ -564,12 +599,11 @@ function startSession(key){
     startedAt:Date.now(), endedAt:null,
     cycle:META.currentCycle,
     dayKey:key, dayName:p.name,
-    isDeload:isDeload(),
     status:'active',
     exercises:p.ex.map(e=>({
       name:e[0], prescribed:e[1], repRange:e[2], restSec:e[3], targets:e[4],
       skipped:false, notes:'',
-      sets:Array.from({length:deloadSets(e[1])},(_,i)=>({n:i+1,weight:null,reps:null,done:false,ts:null}))
+      sets:Array.from({length:e[1]},(_,i)=>({n:i+1,weight:null,reps:null,done:false,ts:null}))
     })),
     totalVolume:0, duration:0, notes:''
   };
@@ -583,12 +617,12 @@ function startSession(key){
 }
 
 function renderSession(){
-  $('sessName').textContent=S.dayName+(S.isDeload?' · deload':'');
+  $('sessName').textContent=S.dayName;
   const list=$('exList');
   const keep=list.scrollTop;          // logging a set rebuilds the list — don't lose their place
   list.innerHTML='';
   S.exercises.forEach((e,ei)=>{
-    const prev=lastFor(e.name,S.id);
+    const prev=lastFor(e.name,S.id,S.dayKey);
     const div=document.createElement('div');
     const allDone=e.sets.every(s=>s.done);
     div.className='ex'+(e.skipped?' skip':allDone?' done':'');
@@ -596,7 +630,7 @@ function renderSession(){
     let lastHtml;
     if(e.skipped){lastHtml='<div class="last none">Skipped</div>';}
     else if(prev){
-      lastHtml='<div class="last">Last · '+prev.date.slice(5)+' &nbsp; '+
+      lastHtml='<div class="last">Last · '+prev.date.slice(5)+(prev.sameDay?'':' <span class="oth">other day</span>')+' &nbsp; '+
         prev.sets.map(s=>'<b>'+s.weight+'</b>×'+s.reps).join(' &nbsp; ')+'</div>';
     } else {lastHtml='<div class="last none">No previous record</div>';}
 
@@ -893,7 +927,7 @@ async function layoutOverPhoto(g){
   /* bottom block */
   let y=CH-M-40;
   g.fillStyle='#8B8780'; g.font='600 21px -apple-system,"Helvetica Neue",sans-serif';
-  tracked(g,'ORA · ET · LABORA',M,y,4.2);
+  tracked(g,'PER ASPERA AD ASTRA',M,y,3.6);
 
   y-=74;
   const cols=[['Duration',dur(s.duration)],
@@ -974,7 +1008,7 @@ async function layoutPlain(g){
     ctr('NO RECORDS THIS SESSION',mid,900+y0,4.4);
   }
   g.fillStyle='#8B8780'; g.font='600 22px -apple-system,"Helvetica Neue",sans-serif';
-  ctr('ORA · ET · LABORA',mid,1268+y0,4.6);
+  ctr('PER · ASPERA · AD · ASTRA',mid,1268+y0,3.8);
 }
 
 async function openCard(){
@@ -1029,7 +1063,10 @@ $('histList').addEventListener('click',ev=>{
   const s=SESSIONS.find(x=>x.id===row.dataset.id); if(!s)return;
   renderDetail(s); show('scDetail');
 });
-$('dtBack').onclick=()=>{show('scHist');renderHist();};
+let dtFrom='scHist';
+$('dtBack').onclick=()=>{
+  if(dtFrom==='scCal'){show('scCal');renderCal();} else {show('scHist');renderHist();}
+};
 
 /* ---- one completed session, every set as logged ---- */
 function renderDetail(s){
@@ -1070,16 +1107,87 @@ function renderDetail(s){
   $('dtBody').innerHTML=h;
 }
 
+/* ============ CALENDAR ============ */
+let calY=null, calM=null;                       /* year, month index */
+const MONTHS=['January','February','March','April','May','June',
+              'July','August','September','October','November','December'];
+
+function sessionsByDate(){
+  const m={};
+  SESSIONS.forEach(s=>{ if(s.status==='completed'){(m[s.date]=m[s.date]||[]).push(s);} });
+  return m;
+}
+function renderCal(){
+  if(calY===null){const d=new Date(today()+'T00:00:00');calY=d.getFullYear();calM=d.getMonth();}
+  const byDate=sessionsByDate();
+  $('calTitle').textContent=MONTHS[calM]+' '+calY;
+  $('calDow').innerHTML=['M','T','W','T','F','S','S']
+    .map(d=>'<div class="calDow">'+d+'</div>').join('');
+
+  const first=new Date(calY,calM,1);
+  const lead=(first.getDay()+6)%7;              /* Monday-first */
+  const days=new Date(calY,calM+1,0).getDate();
+  const prevDays=new Date(calY,calM,0).getDate();
+  let cells='';
+  for(let i=lead-1;i>=0;i--) cells+='<div class="calCell">'+(prevDays-i)+'</div>';
+  let monthSets=0, monthVol=0, monthDays=0;
+  for(let d=1;d<=days;d++){
+    const iso=calY+'-'+pad(calM+1)+'-'+pad(d);
+    const list=byDate[iso]||[];
+    if(list.length){
+      monthDays+=list.length;          /* two sessions in a day are two sessions */
+      list.forEach(x=>{
+        monthSets+=x.exercises.reduce((a,e)=>a+e.sets.filter(y=>y.done).length,0);
+        monthVol+=x.totalVolume||0;
+      });
+    }
+    const cls='calCell mo'+(list.length?' has':'')+(iso===today()?' today':'');
+    cells+='<div class="'+cls+'"'+(list.length?' data-d="'+iso+'"':'')+'>'+d+
+      '<span class="calDot">'+list.map(()=>'<i></i>').join('')+'</span></div>';
+  }
+  const tail=(7-((lead+days)%7))%7;
+  for(let i=1;i<=tail;i++) cells+='<div class="calCell">'+i+'</div>';
+  $('calGrid').innerHTML=cells;
+
+  $('calSum').innerHTML=
+    '<div><div class="k">Sessions</div><div class="v">'+monthDays+'</div></div>'+
+    '<div><div class="k">Sets</div><div class="v">'+monthSets+'</div></div>'+
+    '<div><div class="k">Volume</div><div class="v">'+
+      (monthVol>=10000?(monthVol/1000).toFixed(1)+'k':Math.round(monthVol).toLocaleString())+' kg</div></div>';
+  $('calPick').innerHTML='';
+}
+$('calPrev').onclick=()=>{calM--;if(calM<0){calM=11;calY--;}renderCal();};
+$('calNext').onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCal();};
+$('calBack').onclick=()=>{show('scHome');renderHome();};
+$('calGrid').addEventListener('click',ev=>{
+  const cell=ev.target.closest('.calCell[data-d]'); if(!cell)return;
+  const list=sessionsByDate()[cell.dataset.d]||[];
+  dtFrom='scCal';
+  if(list.length===1){ renderDetail(list[0]); show('scDetail'); return; }
+  /* two sessions on one day happens — let them pick rather than guessing */
+  $('calPick').innerHTML='<div class="lbl">'+cell.dataset.d+'</div>'+
+    list.map(x=>{
+      const st=x.exercises.reduce((a,e)=>a+e.sets.filter(y=>y.done).length,0);
+      return '<div class="hrow" data-id="'+x.id+'"><span class="n2">'+x.dayName+'</span>'+
+        '<span class="v2">'+st+' sets · '+Math.round(x.totalVolume).toLocaleString()+' kg</span>'+
+        '<span class="go">›</span></div>';
+    }).join('');
+});
+$('calPick').addEventListener('click',ev=>{
+  const row=ev.target.closest('.hrow'); if(!row)return;
+  const s=SESSIONS.find(x=>x.id===row.dataset.id); if(!s)return;
+  dtFrom='scCal'; renderDetail(s); show('scDetail');
+});
+$('toCal').onclick=()=>{renderCal();show('scCal');};
+
 /* ============ SETTINGS ============ */
 function renderSet(){
   $('fCycle').value=META.currentCycle;
   $('fStart').value=META.cycleStartDate;
-  $('fDeload').value=META.deloadIntervalWeeks;
 }
 $('saveMeta').onclick=async()=>{
   META.currentCycle=Math.max(1,parseInt($('fCycle').value)||1);
   META.cycleStartDate=$('fStart').value||today();
-  META.deloadIntervalWeeks=Math.max(2,parseInt($('fDeload').value)||5);
   await put('meta',META,'meta');renderHome();toast('Cycle saved');
 };
 $('doExport').onclick=async()=>{
@@ -1110,8 +1218,7 @@ $('fileIn').onchange=async ev=>{
 function normalise(raw){
   if(raw.format==='sanctum-v2')return{meta:raw.meta,sessions:raw.sessions||[]};
   if(Array.isArray(raw.workoutLogs)){
-    const meta={currentCycle:raw.currentCycle||1,cycleStartDate:raw.cycleStartDate||today(),
-      deloadIntervalWeeks:raw.deloadIntervalWeeks||5};
+    const meta={currentCycle:raw.currentCycle||1,cycleStartDate:raw.cycleStartDate||today()};
     const sessions=raw.workoutLogs.map(w=>{
       const ex=(w.exercises||[]).map(e=>{
         const sets=(e.sets||[]).map((s,i)=>({n:s.setNumber||i+1,weight:s.weight,reps:s.reps,
@@ -1122,7 +1229,7 @@ function normalise(raw){
       const done=ex.reduce((a,e)=>a+e.sets.filter(s=>s.done).length,0);
       return{id:w.id||String(Math.random()),date:w.date,startedAt:null,endedAt:null,
         cycle:w.cycle||1,dayKey:'LEGACY',dayName:w.dayName||('Day '+w.dayNumber),
-        isDeload:false,status:done?'completed':'abandoned',exercises:ex,
+        status:done?'completed':'abandoned',exercises:ex,
         totalVolume:w.totalVolume||0,duration:w.duration||0};
     });
     return{meta,sessions};
@@ -1133,7 +1240,7 @@ $('wipe').onclick=async()=>{
   if(!confirm('Erase every session and reset the cycle? This cannot be undone.'))return;
   if(!confirm('Really erase everything?'))return;
   const st=DB.h.transaction('sessions','readwrite').objectStore('sessions');st.clear();
-  META={version:2,currentCycle:1,cycleStartDate:today(),deloadIntervalWeeks:5};
+  META={version:3,currentCycle:1,cycleStartDate:today()};
   await put('meta',META,'meta');
   setTimeout(async()=>{await load();renderHome();renderSet();toast('Erased');},200);
 };

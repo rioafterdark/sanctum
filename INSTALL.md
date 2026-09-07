@@ -61,6 +61,11 @@ gold, then exercises / sets / duration, a Notes field and Save.
 **Save only commits the note.** The session itself is written the moment you press Finish,
 so quitting the app on the summary screen can never lose a workout.
 
+**Calendar** shows the month with every trained day outlined in crimson — one dot per
+session, so a double day is visible at a glance. Tapping a day opens that session; if there
+were two, it offers both. Totals for the month sit underneath, and the arrows move between
+months.
+
 In **History**, tapping any session opens it in full — every exercise with each set as
 `weight × reps`, the set that set a record outlined in crimson, and your note at the end.
 
@@ -92,6 +97,12 @@ for the first fortnight until you have history to beat.
   with glutes, and every day opens with a shoulder movement while you're fresh. Seven
   exercises a day, 17 sets, roughly 64 minutes. Weekly: chest 14, back 14, glutes 14,
   shoulders 9.
+- Machine hip thrust runs on all three days at three different rep ranges (10-12, 8-10,
+  5-10). Because of that, the "last time" reference under an exercise prefers the most
+  recent log **from the same day slot**, falling back to any day and labelling it "other
+  day" when it has to. Otherwise Day III would show you Day II's numbers at a rep range
+  you aren't working in.
+- No deload weeks. The cycle start date now only drives the week counter in the header.
 - Weekly set counting credits the first listed muscle in full and any second muscle at a
   half set, so a hip thrust counts as a whole glute set rather than a shared one.
 - Every exercise shows what you lifted last time, so progressive overload at 0–1 RIR

@@ -1,4 +1,4 @@
-const CACHE = 'sanctum-v11';
+const CACHE = 'sanctum-v12';
 const ASSETS = [
   './',
   './index.html',
