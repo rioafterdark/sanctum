@@ -164,6 +164,11 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .btn:active{background:var(--cinis)}
 .btn.pri{background:var(--sanguis-lo);border-color:var(--sanguis);color:var(--ossa)}
 .btn.gh{flex:0 0 auto;padding:16px 20px;color:var(--ash)}
+.btn.hold{position:relative;overflow:hidden;touch-action:none}
+.btn.hold i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--crimson);
+  opacity:.85;transition:width 0s linear}
+.btn.hold.arming i{width:100%;transition:width 1.1s linear}
+.btn.hold span{position:relative;z-index:1}
 
 /* ---- history / settings ---- */
 .sec{padding:22px 18px 6px}
@@ -267,7 +272,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
       <div class="vol">
         <div class="lbl" style="margin-bottom:12px">Hard sets · this week</div>
         <div id="volList"></div>
-        <p class="note">Secondary muscles count a half set. Targets: chest 18, back 18, glutes 18, shoulders 9.</p>
+        <p class="note">Secondary muscles count a half set. Targets: chest 14, back 14, glutes 14, shoulders 9.</p>
       </div>
     </div>
     <div class="foot"><div class="in">
@@ -288,7 +293,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
     <div class="scroll" id="exList"></div>
     <div class="foot"><div class="in">
       <button class="btn gh" id="abandon">Discard</button>
-      <button class="btn pri" id="finish">Finish</button>
+      <button class="btn pri hold" id="finish"><i></i><span>Hold to finish</span></button>
     </div></div>
   </section>
 
@@ -384,32 +389,36 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 /* ============ PROGRAM ============ */
 const PROGRAM = {
   D1:{name:'Day I', ex:[
-    ['Incline Machine Press',4,'5-10',180,['Chest']],
-    ['Incline Chest Flys',2,'5-10',120,['Chest']],
-    ['Weighted Pull Ups',4,'5-10',180,['Back']],
-    ['Chest Supported Rows · Neutral Grip',2,'5-10',120,['Back']],
-    ['Machine Hip Thrust',4,'6-10',180,['Glutes']],
-    ['Abduction Machine',2,'10-12',120,['Glutes']],
-    ['Cable Lateral Raises',3,'5-10',90,['Shoulders']]]},
+    ['Cable Lateral Raises',3,'5-10',180,['Shoulders']],
+    ['Incline Machine Press',3,'5-10',180,['Chest']],
+    ['Incline Chest Flys',3,'5-10',180,['Chest']],
+    ['Weighted Pull Ups',2,'5-10',180,['Back']],
+    ['Neutral Chest Supported Rows',2,'5-10',180,['Back']],
+    ['Reverse V Machine Squats',2,'5-10',180,['Glutes']],
+    ['Abduction Machine',2,'10-12',180,['Glutes']]]},
   D2:{name:'Day II', ex:[
-    ['Wide Grip Lat Pull-Down',4,'5-10',180,['Back']],
-    ['T-Bar Row',2,'5-10',120,['Back']],
-    ['Bulgarian Split Squats',4,'6-8',180,['Glutes','Quads']],
-    ['45° Back Extensions',2,'10-12',120,['Glutes','Hamstrings']],
-    ['Chest Press Machine',4,'5-10',180,['Chest']],
-    ['Pec Fly Machine',2,'5-10',120,['Chest']],
-    ['Seated Face Pulls',3,'5-10',90,['Shoulders']]]},
+    ['Dumbbell Y-Raises',3,'5-10',180,['Shoulders']],
+    ['Wide Grip Lat Pull-Down',3,'5-10',180,['Back']],
+    ['T-Bar Row',3,'5-10',180,['Back']],
+    ['Bulgarian Split Squats',2,'5-10',180,['Glutes']],
+    ['45° Back Extensions',2,'10-12',180,['Glutes']],
+    ['Chest Press Machine',2,'5-10',180,['Chest']],
+    ['Pec Fly Machine',2,'5-10',180,['Chest']]]},
   D3:{name:'Day III', ex:[
-    ['Romanian Deadlift',4,'6-10',180,['Glutes','Hamstrings']],
-    ['Leg Press · High & Wide',2,'10-12',120,['Glutes','Quads']],
-    ['Dip Machine',4,'5-10',180,['Chest']],
-    ['High to Low Cable Flys',2,'5-10',120,['Chest']],
-    ['Seated Cable Row · Wide',4,'5-10',180,['Back']],
-    ['Straight-Arm Cable Pulldown',2,'5-10',120,['Back']],
-    ['Machine Lateral Raises',3,'5-10',90,['Shoulders']]]}
+    ['Machine Lateral Raises',3,'5-10',180,['Shoulders']],
+    ['Machine Hip Thrust',3,'6-10',180,['Glutes']],
+    ['Romanian Deadlift',3,'6-10',180,['Glutes']],
+    ['Dip Machine',2,'5-10',180,['Chest']],
+    ['High to Low Cable Flys',2,'5-10',180,['Chest']],
+    ['Pronated Chest Supported Rows',2,'5-10',180,['Back']],
+    ['Straight-Arm Cable Pulldown',2,'5-10',180,['Back']]]}
 };
+
+/* one lift was renamed — keep its history attached to the new name */
+const ALIAS={'Chest Supported Rows · Neutral Grip':'Neutral Chest Supported Rows'};
+const canon=n=>ALIAS[n]||n;
 const ORDER=['D1','D2','D3'];
-const TRACKED=[['Chest',18],['Back',18],['Glutes',18],['Shoulders',9]];
+const TRACKED=[['Chest',14],['Back',14],['Glutes',14],['Shoulders',9]];
 
 /* ============ DB ============ */
 const DB={h:null};
@@ -499,7 +508,7 @@ function lastFor(exName,excludeId){
   for(let i=SESSIONS.length-1;i>=0;i--){
     const s=SESSIONS[i];
     if(s.id===excludeId||s.status!=='completed')continue;
-    const e=s.exercises.find(x=>x.name===exName);
+    const e=s.exercises.find(x=>canon(x.name)===canon(exName));
     if(!e)continue;
     const done=e.sets.filter(x=>x.done);
     if(done.length)return{date:s.date,sets:done};
@@ -694,7 +703,7 @@ async function requestWake(){try{if('wakeLock'in navigator)wake=await navigator.
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S)requestWake();});
 
 /* ---- finish / discard ---- */
-$('finish').onclick=async()=>{
+async function doFinish(){
   const done=S.exercises.reduce((a,e)=>a+e.sets.filter(s=>s.done).length,0);
   if(!done){toast('No sets logged — discard it instead');return;}
   S.status='completed';
@@ -708,7 +717,22 @@ $('finish').onclick=async()=>{
   LAST=S; S=null; cardPhoto=null;
   renderHome();
   renderDone(); show('scDone');
-};
+}
+
+/* a tap ended a session by accident once — a confirm box is still one stray tap
+   away, so finishing now needs a deliberate 1.1s press */
+(function(){
+  const fin=$('finish'); let t=null;
+  const cancel=()=>{clearTimeout(t);t=null;fin.classList.remove('arming');};
+  fin.addEventListener('pointerdown',ev=>{
+    ev.preventDefault();
+    fin.classList.add('arming');
+    clearTimeout(t);
+    t=setTimeout(()=>{cancel();buzz(35);doFinish();},1100);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(e=>fin.addEventListener(e,cancel));
+  fin.addEventListener('contextmenu',ev=>ev.preventDefault());
+})();
 $('abandon').onclick=async()=>{
   if(!confirm('Discard this session? Nothing will be saved.'))return;
   await del('sessions',S.id).catch(()=>{});
@@ -734,7 +758,7 @@ function recordsFor(sess){
     let pBest=0,pW=0,seen=false;
     SESSIONS.forEach(s=>{
       if(s.id===sess.id||s.status!=='completed'||s.date>sess.date)return;
-      const pe=s.exercises.find(x=>x.name===e.name);
+      const pe=s.exercises.find(x=>canon(x.name)===canon(e.name));
       if(!pe)return;
       pe.sets.filter(x=>x.done&&x.weight>0&&x.reps>0).forEach(x=>{
         seen=true;

@@ -89,9 +89,9 @@ for the first fortnight until you have history to beat.
 ## What changed from the old app
 
 - Routine is the 3-day specialisation: Day I leads with chest, Day II with back, Day III
-  with glutes. Two chest, two back, two glutes and one shoulder exercise each day, 4 sets
-  on the lead of each pair and 2 on the second. Weekly: chest 18, back 18, glutes 18,
-  shoulders 9. Eighteen distinct movements, no repeats across the week.
+  with glutes, and every day opens with a shoulder movement while you're fresh. Seven
+  exercises a day, 17 sets, roughly 64 minutes. Weekly: chest 14, back 14, glutes 14,
+  shoulders 9.
 - Weekly set counting credits the first listed muscle in full and any second muscle at a
   half set, so a hip thrust counts as a whole glute set rather than a shared one.
 - Every exercise shows what you lifted last time, so progressive overload at 0–1 RIR
@@ -105,3 +105,6 @@ for the first fortnight until you have history to beat.
 - Deload weeks are detected from the cycle start date and halve every prescription.
 - A session with no completed sets can no longer be saved as "completed" — that was the
   bug behind the 20 July entry.
+- Finishing a session needs a deliberate 1.1 second press on **Hold to finish**, with a
+  fill that runs across the button as you hold. Releasing early, or sliding your thumb off
+  the button, cancels it. A stray tap can no longer end a workout.
