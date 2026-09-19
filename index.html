@@ -82,7 +82,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 /* ---- weekly volume ---- */
 .vol{padding:22px 18px 10px}
 .volrow{display:flex;align-items:center;gap:11px;padding:7px 0}
-.volrow .n{width:78px;flex:0 0 78px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ash)}
+.volrow .n{width:92px;flex:0 0 92px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ash)}
 .bar{flex:1;height:3px;background:var(--stone);position:relative}
 .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ossa);display:block}
 .bar.hit i{background:var(--sanguis)}
@@ -156,7 +156,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .foot{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(to top,var(--nox) 62%,transparent);
   padding:22px 18px calc(16px + env(safe-area-inset-bottom))}
 .foot .in{max-width:560px;margin:0 auto;display:flex;gap:8px}
-.foot .in .btn{padding:16px 6px;letter-spacing:.12em}
+.foot .in .btn{padding:16px 3px;letter-spacing:.06em;font-size:10px}
 .btn{flex:1;padding:16px;border:1px solid var(--edge);background:var(--crypt);
   font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;text-align:center;font-weight:600}
 .btn:active{background:var(--cinis)}
@@ -268,6 +268,28 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .calSum .v{font-family:var(--mono);font-size:19px;color:var(--ossa)}
 .calPick{padding:8px 18px 0}
 .calPick .lbl{margin-bottom:8px}
+/* ---- next-up + alternates ---- */
+.nextCard{display:block;width:100%;text-align:left;background:var(--crypt);
+  border:1px solid var(--crimson);padding:19px 18px 17px}
+.nextCard:active{background:var(--cinis)}
+.nextCard .lbl{display:block;color:var(--crimson);margin-bottom:9px}
+.nextCard .nm{display:block;font-family:var(--serif);font-size:27px;letter-spacing:.03em;margin-bottom:7px}
+.nextCard .meta{display:block;font-size:11.5px;color:var(--ash);margin-bottom:4px}
+.nextCard .ago{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.altGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.altCard{background:var(--crypt);border:1px solid var(--edge);padding:13px 13px 12px;text-align:left}
+.altCard:active{background:var(--cinis)}
+.altCard .nm{display:block;font-family:var(--serif);font-size:16px;margin-bottom:5px}
+.altCard .ago{display:block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+
+/* ---- volume tab ---- */
+.volHead{padding:22px 18px 6px}
+.volHead h4{font-family:var(--serif);font-size:17px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ossa);font-weight:400;margin:0 0 6px}
+.volHead .win{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.volStat{display:flex;gap:26px;padding:16px 18px 4px}
+.volStat .k{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:6px}
+.volStat .v{font-family:var(--mono);font-size:19px;color:var(--ossa)}
 #toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,14px);z-index:60;
   background:var(--stone);border:1px solid var(--edge);padding:11px 17px;font-size:12px;
   opacity:0;transition:.25s;pointer-events:none;max-width:88vw;text-align:center}
@@ -290,13 +312,9 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
   <section class="screen on" id="scHome">
     <div class="scroll">
       <div class="days" id="days"></div>
-      <div class="vol">
-        <div class="lbl" style="margin-bottom:12px">Hard sets · this week</div>
-        <div id="volList"></div>
-        <p class="note">Secondary muscles count a half set. Targets: chest 14, back 14, glutes 14, shoulders 9.</p>
-      </div>
     </div>
     <div class="foot"><div class="in">
+      <button class="btn" id="toVol">Volume</button>
       <button class="btn" id="toCal">Calendar</button>
       <button class="btn" id="toHist">History</button>
       <button class="btn" id="toSet">Settings</button>
@@ -368,6 +386,19 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
     </div></div>
   </section>
 
+  <!-- VOLUME -->
+  <section class="screen" id="scVol">
+    <div class="scroll">
+      <div class="volHead"><h4>Hard sets</h4><div class="win" id="volWin"></div></div>
+      <div class="volStat" id="volStat"></div>
+      <div class="vol" style="padding:14px 18px 10px"><div id="volList"></div></div>
+      <p class="note" style="padding:0 18px 20px">A set counts fully to the muscle the exercise
+        is for, and half to any secondary muscle. Bars are scaled to your highest muscle in
+        the window, not to a target.</p>
+    </div>
+    <div class="foot"><div class="in"><button class="btn" id="volBack">Back</button></div></div>
+  </section>
+
   <!-- CALENDAR -->
   <section class="screen" id="scCal">
     <div class="scroll">
@@ -425,37 +456,68 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 
 /* ============ PROGRAM ============ */
 const PROGRAM = {
-  D1:{name:'Day I', ex:[
-    ['Cable Lateral Raises',3,'5-10',180,['Shoulders']],
-    ['Incline Machine Press',3,'5-10',180,['Chest']],
-    ['Incline Chest Flys',3,'5-10',180,['Chest']],
-    ['Weighted Pull Ups',2,'5-10',180,['Back']],
-    ['Neutral Chest Supported Rows',2,'5-10',180,['Back']],
-    ['Machine Hip Thrust',2,'10-12',180,['Glutes']],
-    ['Abduction Machine',2,'10-12',180,['Glutes']]]},
-  D2:{name:'Day II', ex:[
-    ['Dumbbell Y-Raises',3,'5-10',180,['Shoulders']],
-    ['Wide Grip Lat Pull-Down',3,'5-10',180,['Back']],
-    ['T-Bar Row',3,'5-10',180,['Back']],
-    ['Bulgarian Split Squats',2,'5-10',180,['Glutes']],
-    ['Machine Hip Thrust',2,'8-10',180,['Glutes']],
-    ['Chest Press Machine',2,'5-10',180,['Chest']],
-    ['Pec Fly Machine',2,'5-10',180,['Chest']]]},
-  D3:{name:'Day III', ex:[
-    ['Machine Lateral Raises',3,'5-10',180,['Shoulders']],
-    ['Machine Hip Thrust',3,'5-10',180,['Glutes']],
-    ['Romanian Deadlift',3,'5-10',180,['Glutes']],
-    ['Dip Machine',2,'5-10',180,['Chest']],
-    ['High to Low Cable Flys',2,'5-10',180,['Chest']],
-    ['Pronated Chest Supported Rows',2,'5-10',180,['Back']],
-    ['Straight-Arm Cable Pulldown',2,'5-10',180,['Back']]]}
+  UA:{name:'Upper A', type:'U', ex:[
+    ['Incline Machine Press',2,'6-10',180,['Chest']],
+    ['Pec Deck',2,'6-10',180,['Chest']],
+    ['Pull-ups',2,'6-10',180,['Back']],
+    ['Pronated Chest Supported Row',2,'6-10',180,['Back']],
+    ['Cable Lateral Raises',2,'10-15',120,['Shoulders']],
+    ['Reverse Pec Deck',2,'10-15',120,['Rear Delts']],
+    ['Bayesian Cable Curls',2,'10-15',120,['Biceps']],
+    ['Tricep Pushdown',2,'10-15',120,['Triceps']]]},
+  UB:{name:'Upper B', type:'U', ex:[
+    ['Dips',2,'6-10',180,['Chest']],
+    ['High-to-Low Cable Fly w/ Press',2,'6-10',180,['Chest']],
+    ['Neutral Wide Grip Lat Pulldown',2,'6-10',180,['Back']],
+    ['T-Bar Row',2,'6-10',180,['Back']],
+    ['Machine Lateral Raises',2,'10-15',120,['Shoulders']],
+    ['Seated Face Pull',2,'10-15',120,['Rear Delts']],
+    ['Incline DB Bicep Curls',2,'10-15',120,['Biceps']],
+    ['Single Arm Tricep Pushdown',2,'10-15',120,['Triceps']]]},
+  UC:{name:'Upper C', type:'U', ex:[
+    ['Machine Chest Press',2,'6-10',180,['Chest']],
+    ['Low-to-High Cable Fly',2,'6-10',180,['Chest']],
+    ['Single-Arm Lat Pulldown',2,'6-10',180,['Back']],
+    ['Neutral Grip Chest Supported Row',2,'6-10',180,['Back']],
+    ['Dumbbell Y-Raises',2,'10-15',120,['Shoulders']],
+    ['Single Arm Rear Delt Fly',2,'10-15',120,['Rear Delts']],
+    ['Dumbbell Hammer Curl',2,'10-15',120,['Biceps']],
+    ['DB Skull Crushers',2,'10-15',120,['Triceps']]]},
+  LA:{name:'Lower A', type:'L', ex:[
+    ['Barbell Hip Thrust',2,'6-10',180,['Glutes']],
+    ['DB Bulgarian Split Squat',2,'6-10',180,['Quads','Glutes']],
+    ['Barbell Romanian Deadlift',2,'6-10',180,['Hamstrings','Glutes']],
+    ['Abductor Machine · Upright',2,'12-15',120,['Glutes']],
+    ['Leg Extension',2,'12-15',120,['Quads']],
+    ['Machine Hip Adduction',2,'12-15',120,['Adductors']],
+    ['Seated Calf Raise',2,'12-15',120,['Calves']],
+    ['Cable Crunch',2,'12-15',120,['Abs']]]},
+  LB:{name:'Lower B', type:'L', ex:[
+    ['Barbell Hip Thrust',2,'6-10',180,['Glutes']],
+    ['Belt Squat',2,'6-10',180,['Quads']],
+    ['45° Hyperextension',2,'6-10',180,['Glutes','Hamstrings']],
+    ['Abductor Machine · Lean Forward',2,'12-15',120,['Glutes']],
+    ['Single-Leg Leg Extension',2,'12-15',120,['Quads']],
+    ['Machine Hip Adduction',2,'12-15',120,['Adductors']],
+    ['Seated Calf Raise',2,'12-15',120,['Calves']],
+    ['Cable Crunch',2,'12-15',120,['Abs']]]},
+  LC:{name:'Lower C', type:'L', ex:[
+    ['Barbell Hip Thrust',2,'6-10',180,['Glutes']],
+    ['FFE Barbell Reverse Lunge',2,'6-10',180,['Quads','Glutes']],
+    ['B-Stance Romanian Deadlift',2,'6-10',180,['Hamstrings','Glutes']],
+    ['Abductor Machine · Lean Back',2,'12-15',120,['Glutes']],
+    ['Machine Leg Extension · Rest Pause',2,'12-15',120,['Quads']],
+    ['Machine Hip Adduction',2,'12-15',120,['Adductors']],
+    ['Seated Calf Raise',2,'12-15',120,['Calves']],
+    ['Cable Crunch',2,'12-15',120,['Abs']]]}
 };
 
 /* one lift was renamed — keep its history attached to the new name */
-const ALIAS={'Chest Supported Rows · Neutral Grip':'Neutral Chest Supported Rows'};
+const ALIAS={'Chest Supported Rows · Neutral Grip':'Neutral Grip Chest Supported Row'};
 const canon=n=>ALIAS[n]||n;
-const ORDER=['D1','D2','D3'];
-const TRACKED=[['Chest',14],['Back',14],['Glutes',14],['Shoulders',9]];
+const ORDER=['UA','UB','UC','LA','LB','LC'];
+const TRACKED=['Chest','Back','Shoulders','Rear Delts','Biceps','Triceps',
+  'Glutes','Quads','Hamstrings','Adductors','Calves','Abs'];
 
 /* ============ DB ============ */
 const DB={h:null};
@@ -559,35 +621,56 @@ function best(setsArr){
 }
 
 /* ============ HOME ============ */
+/* ---- rotation: strict U/L alternation, with A-B-C queues that run on
+   across week boundaries rather than resetting each Monday ---- */
+function lastOfType(t){
+  for(let i=SESSIONS.length-1;i>=0;i--){
+    const s=SESSIONS[i];
+    if(s.status==='completed'&&PROGRAM[s.dayKey]&&PROGRAM[s.dayKey].type===t)return s;
+  }
+  return null;
+}
+function nextKey(){
+  const done=SESSIONS.filter(s=>s.status==='completed'&&PROGRAM[s.dayKey]);
+  const last=done.length?done[done.length-1]:null;
+  const type = last ? (PROGRAM[last.dayKey].type==='U'?'L':'U') : 'U';
+  const ring = type==='U' ? ['UA','UB','UC'] : ['LA','LB','LC'];
+  const prev = lastOfType(type);
+  if(!prev) return ring[0];
+  const i = ring.indexOf(prev.dayKey);
+  return ring[(i+1)%ring.length];
+}
+
 function renderHome(){
   $('hsub').innerHTML='<span class="cist">'+cistercian(META.currentCycle)+'</span>'+
     'Cycle '+META.currentCycle+' · Week '+weekOfCycle();
 
-
-  const d=$('days');d.innerHTML='';
-  ORDER.forEach((k,i)=>{
+  const suggested=nextKey();
+  const card=(k,big)=>{
     const p=PROGRAM[k];
     const prev=SESSIONS.filter(s=>s.dayKey===k&&s.status==='completed').pop();
     const ago=prev?daysAgo(prev.date):null;
     const agoTxt=prev?(ago===0?'today':ago===1?'1 day':ago+' days'):'never';
     const sets=p.ex.reduce((a,e)=>a+e[1],0);
     const b=document.createElement('button');
-    b.className='day'+((ago===null||ago>=8)?' stale':'');
-    b.innerHTML='<span class="idx">'+['I','II','III','IV'][i]+'</span>'+
-      '<span class="body"><span class="nm">'+p.name+'</span>'+
-      '<span class="meta">'+p.ex.length+' exercises · '+sets+' sets</span></span>'+
-      '<span class="ago">'+agoTxt+'</span>';
+    b.className=big?'nextCard':'altCard';
+    b.dataset.k=k;
+    b.innerHTML = big
+      ? '<span class="lbl">Next up</span><span class="nm">'+p.name+'</span>'+
+        '<span class="meta">'+p.ex.length+' exercises · '+sets+' sets</span>'+
+        '<span class="ago">last · '+agoTxt+'</span>'
+      : '<span class="nm">'+p.name+'</span><span class="ago">'+agoTxt+'</span>';
     b.onclick=()=>startSession(k);
-    d.appendChild(b);
-  });
-
-  const map=setsByTarget(weekStart());
-  $('volList').innerHTML=TRACKED.map(([t,goal])=>{
-    const v=map[t]||0, pct=Math.min(100,v/goal*100);
-    return '<div class="volrow"><span class="n">'+t+'</span>'+
-      '<span class="bar'+(v>=goal?' hit':'')+'"><i style="width:'+pct+'%"></i></span>'+
-      '<span class="v">'+(Math.round(v*10)/10)+'/'+goal+'</span></div>';
-  }).join('');
+    return b;
+  };
+  const d=$('days'); d.innerHTML='';
+  d.appendChild(card(suggested,true));
+  const alt=document.createElement('div'); alt.className='altGrid';
+  ORDER.filter(k=>k!==suggested).forEach(k=>alt.appendChild(card(k,false)));
+  const hdr=document.createElement('div');
+  hdr.className='lbl'; hdr.style.cssText='margin:26px 0 10px';
+  hdr.textContent='Or pick another';
+  d.appendChild(hdr); d.appendChild(alt);
 }
 
 /* ============ SESSION ============ */
@@ -1106,6 +1189,37 @@ function renderDetail(s){
      s.notes.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))+'</p></div>';
   $('dtBody').innerHTML=h;
 }
+
+/* ============ VOLUME — rolling 7 days ============ */
+function isoMinus(days){
+  const d=new Date(today()+'T00:00:00');
+  d.setDate(d.getDate()-days);
+  return d.toISOString().slice(0,10);
+}
+function renderVol(){
+  const from=isoMinus(6);                       /* today plus the 6 before it */
+  const map=setsByTarget(from);
+  const inWin=SESSIONS.filter(s=>s.status==='completed'&&s.date>=from);
+  const sets=inWin.reduce((a,s)=>a+s.exercises.reduce((b,e)=>b+e.sets.filter(x=>x.done).length,0),0);
+  const vol =inWin.reduce((a,s)=>a+(s.totalVolume||0),0);
+
+  $('volWin').textContent=from.slice(5)+' — '+today().slice(5);
+  $('volStat').innerHTML=
+    '<div><div class="k">Sessions</div><div class="v">'+inWin.length+'</div></div>'+
+    '<div><div class="k">Sets</div><div class="v">'+sets+'</div></div>'+
+    '<div><div class="k">Volume</div><div class="v">'+
+      (vol>=10000?(vol/1000).toFixed(1)+'k':Math.round(vol).toLocaleString())+' kg</div></div>';
+
+  const max=Math.max(1,...TRACKED.map(t=>map[t]||0));
+  $('volList').innerHTML=TRACKED.map(t=>{
+    const v=map[t]||0;
+    return '<div class="volrow"><span class="n">'+t+'</span>'+
+      '<span class="bar"><i style="width:'+(v/max*100)+'%"></i></span>'+
+      '<span class="v">'+(Math.round(v*10)/10)+'</span></div>';
+  }).join('');
+}
+$('toVol').onclick=()=>{renderVol();show('scVol');};
+$('volBack').onclick=()=>{show('scHome');renderHome();};
 
 /* ============ CALENDAR ============ */
 let calY=null, calM=null;                       /* year, month index */

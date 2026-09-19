@@ -93,18 +93,18 @@ for the first fortnight until you have history to beat.
 
 ## What changed from the old app
 
-- Routine is the 3-day specialisation: Day I leads with chest, Day II with back, Day III
-  with glutes, and every day opens with a shoulder movement while you're fresh. Seven
-  exercises a day, 17 sets, roughly 64 minutes. Weekly: chest 14, back 14, glutes 14,
-  shoulders 9.
-- Machine hip thrust runs on all three days at three different rep ranges (10-12, 8-10,
-  5-10). Because of that, the "last time" reference under an exercise prefers the most
-  recent log **from the same day slot**, falling back to any day and labelling it "other
-  day" when it has to. Otherwise Day III would show you Day II's numbers at a rep range
-  you aren't working in.
-- No deload weeks. The cycle start date now only drives the week counter in the header.
-- Weekly set counting credits the first listed muscle in full and any second muscle at a
-  half set, so a hip thrust counts as a whole glute set rather than a shared one.
+- Routine is six workouts — Upper A/B/C and Lower A/B/C — eight exercises each, two sets
+  each, sixteen sets a session, roughly 50 minutes. 6-10 reps with 3 min rest on the heavy
+  lifts, 10-15 (12-15 on lowers) with 2 min on the rest.
+- Five sessions a week, alternating upper and lower. The A/B/C queues run continuously
+  rather than resetting each week, so a week holding three uppers is followed by one
+  holding two. The home screen computes what's next from your history and shows it as
+  **Next up**; the other five sit below it if you want to override.
+- Barbell Hip Thrust opens all three lower days, and Machine Hip Adduction, Seated Calf
+  Raise and Cable Crunch close all three. The "last time" reference prefers the same
+  workout letter, falling back to another and labelling it "other day".
+- **Volume** is its own tab: hard sets per muscle over a rolling seven days, plus sessions,
+  sets and tonnage for that window. Bars scale to your highest muscle, not to a target.
 - Every exercise shows what you lifted last time, so progressive overload at 0–1 RIR
   has an actual reference point instead of memory.
 - Rest timer starts automatically on each logged set, using the prescribed rest for that
