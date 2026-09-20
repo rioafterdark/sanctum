@@ -93,6 +93,53 @@ for the first fortnight until you have history to beat.
 
 ## What changed from the old app
 
+- Routine is six workouts — Upper A/B/C and Lower A/B/C — but each Upper session now
+  also rotates which body part leads: chest, back, or shoulders. The three exercise sets
+  and three lead orders combine into nine distinct upper sessions (A-chest, A-back,
+  A-shoulders, B-chest, …) before anything repeats — about 9 weeks at your frequency to
+  see the whole cycle once. Arms always close the session; only chest, back and shoulders
+  reorder.
+- Five sessions a week, alternating upper and lower, same as before. Everything is derived
+  from your actual session history, so overriding the suggestion (jumping to any workout in
+  the queue) doesn't need a reset — the next suggestion just branches from whatever you
+  actually did.
+- The home screen shows **Next up** as before, and below it a numbered **Queue** — a
+  forecast of the next five sessions in order, assuming you follow the suggestion each
+  time. Any row starts that session directly, same as the old alternates grid, just
+  vertical instead of a 2-up grid.
+- Tracking is now one-set-one-set, no half credit. Every exercise names exactly one
+  muscle. On the four opening exercises of every Lower day (hip thrust, the squat/lunge
+  variant, the hinge variant, the abductor variant) that muscle is Glutes, even where the
+  movement is quad- or hamstring-dominant — Belt Squat and Bulgarian Split Squats both
+  show GLUTES on screen and in the Volume tab, by design. Rear-delt exercises are folded
+  into Shoulders the same way.
+- Volume tracks ten muscles: Chest, Back, Shoulders, Biceps, Triceps, Glutes, Quads,
+  Adductors, Calves, Abs. Hamstrings and Rear Delts are no longer tracked separately.
+
+## Session card
+
+Finishing a session lands on a summary screen — duration, volume, records, sets — with a
+**Make card** button. That opens the camera or photo library straight away. Your photo is
+the subject; the session data sits over it as an overlay: small mark and wordmark top left,
+then day, date, and the three stats along the bottom.
+
+- **9:16 / 4:5** toggles between an Instagram story and a feed post.
+- **Retake** swaps the photo.
+- **Share** hands the image to the iOS share sheet — Save Image, Instagram, Messages.
+  If the sheet isn't available, press and hold the image to save it.
+
+Legibility is handled with two soft gradients at fixed pixel offsets plus a shadow on every
+glyph, so the type survives a white gym wall while the middle of the photo stays untouched.
+Measured against a deliberately blown-out test image it holds 3.2:1 on the wordmark and
+4.3:1 on the stats in both formats.
+
+A **record** means you beat your own previous best on that exercise, measured by estimated
+1RM (Epley), so an extra rep counts as progress the same way extra weight does. The first
+time an exercise is logged counts too, which is how Hevy behaves — expect inflated numbers
+for the first fortnight until you have history to beat.
+
+## What changed from the old app
+
 - Routine is six workouts — Upper A/B/C and Lower A/B/C — eight exercises each, two sets
   each, sixteen sets a session, roughly 50 minutes. 6-10 reps with 3 min rest on the heavy
   lifts, 10-15 (12-15 on lowers) with 2 min on the rest.

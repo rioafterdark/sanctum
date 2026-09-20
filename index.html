@@ -276,11 +276,14 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .nextCard .nm{display:block;font-family:var(--serif);font-size:27px;letter-spacing:.03em;margin-bottom:7px}
 .nextCard .meta{display:block;font-size:11.5px;color:var(--ash);margin-bottom:4px}
 .nextCard .ago{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
-.altGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.altCard{background:var(--crypt);border:1px solid var(--edge);padding:13px 13px 12px;text-align:left}
-.altCard:active{background:var(--cinis)}
-.altCard .nm{display:block;font-family:var(--serif);font-size:16px;margin-bottom:5px}
-.altCard .ago{display:block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.queueList{display:flex;flex-direction:column;gap:7px}
+.queueRow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  background:var(--crypt);border:1px solid var(--edge);padding:13px 15px}
+.queueRow:active{background:var(--cinis)}
+.queueRow .n{font-family:var(--mono);font-size:11px;color:var(--dim);width:16px;flex:0 0 16px}
+.queueRow .body{flex:1;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.queueRow .nm{font-family:var(--serif);font-size:16px}
+.queueRow .lead{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
 
 /* ---- volume tab ---- */
 .volHead{padding:22px 18px 6px}
@@ -392,9 +395,9 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
       <div class="volHead"><h4>Hard sets</h4><div class="win" id="volWin"></div></div>
       <div class="volStat" id="volStat"></div>
       <div class="vol" style="padding:14px 18px 10px"><div id="volList"></div></div>
-      <p class="note" style="padding:0 18px 20px">A set counts fully to the muscle the exercise
-        is for, and half to any secondary muscle. Bars are scaled to your highest muscle in
-        the window, not to a target.</p>
+      <p class="note" style="padding:0 18px 20px">Every set counts once, to the one muscle
+        the exercise trains. Bars are scaled to your highest muscle in the window, not to
+        a target.</p>
     </div>
     <div class="foot"><div class="in"><button class="btn" id="volBack">Back</button></div></div>
   </section>
@@ -456,37 +459,37 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 
 /* ============ PROGRAM ============ */
 const PROGRAM = {
-  UA:{name:'Upper A', type:'U', ex:[
-    ['Incline Machine Press',2,'6-10',180,['Chest']],
-    ['Pec Deck',2,'6-10',180,['Chest']],
-    ['Pull-ups',2,'6-10',180,['Back']],
-    ['Pronated Chest Supported Row',2,'6-10',180,['Back']],
-    ['Cable Lateral Raises',2,'10-15',120,['Shoulders']],
-    ['Reverse Pec Deck',2,'10-15',120,['Rear Delts']],
-    ['Bayesian Cable Curls',2,'10-15',120,['Biceps']],
-    ['Tricep Pushdown',2,'10-15',120,['Triceps']]]},
-  UB:{name:'Upper B', type:'U', ex:[
-    ['Dips',2,'6-10',180,['Chest']],
-    ['High-to-Low Cable Fly w/ Press',2,'6-10',180,['Chest']],
-    ['Neutral Wide Grip Lat Pulldown',2,'6-10',180,['Back']],
-    ['T-Bar Row',2,'6-10',180,['Back']],
-    ['Machine Lateral Raises',2,'10-15',120,['Shoulders']],
-    ['Seated Face Pull',2,'10-15',120,['Rear Delts']],
-    ['Incline DB Bicep Curls',2,'10-15',120,['Biceps']],
-    ['Single Arm Tricep Pushdown',2,'10-15',120,['Triceps']]]},
-  UC:{name:'Upper C', type:'U', ex:[
-    ['Machine Chest Press',2,'6-10',180,['Chest']],
-    ['Low-to-High Cable Fly',2,'6-10',180,['Chest']],
-    ['Single-Arm Lat Pulldown',2,'6-10',180,['Back']],
-    ['Neutral Grip Chest Supported Row',2,'6-10',180,['Back']],
-    ['Dumbbell Y-Raises',2,'10-15',120,['Shoulders']],
-    ['Single Arm Rear Delt Fly',2,'10-15',120,['Rear Delts']],
-    ['Dumbbell Hammer Curl',2,'10-15',120,['Biceps']],
-    ['DB Skull Crushers',2,'10-15',120,['Triceps']]]},
+  UA:{name:'Upper A', type:'U', blocks:{
+    Chest:[['Incline Machine Press',2,'6-10',180,['Chest']],
+           ['Pec Deck',2,'6-10',180,['Chest']]],
+    Back:[['Pull-ups',2,'6-10',180,['Back']],
+          ['Pronated Chest Supported Row',2,'6-10',180,['Back']]],
+    Shoulders:[['Cable Lateral Raises',2,'10-15',120,['Shoulders']],
+               ['Reverse Pec Deck',2,'10-15',120,['Shoulders']]],
+    Arms:[['Bayesian Cable Curls',2,'10-15',120,['Biceps']],
+          ['Tricep Pushdown',2,'10-15',120,['Triceps']]]}},
+  UB:{name:'Upper B', type:'U', blocks:{
+    Chest:[['Dips',2,'6-10',180,['Chest']],
+           ['High-to-Low Cable Fly w/ Press',2,'6-10',180,['Chest']]],
+    Back:[['Neutral Wide Grip Lat Pulldown',2,'6-10',180,['Back']],
+          ['T-Bar Row',2,'6-10',180,['Back']]],
+    Shoulders:[['Machine Lateral Raises',2,'10-15',120,['Shoulders']],
+               ['Seated Face Pull',2,'10-15',120,['Shoulders']]],
+    Arms:[['Incline DB Bicep Curls',2,'10-15',120,['Biceps']],
+          ['Single Arm Tricep Pushdown',2,'10-15',120,['Triceps']]]}},
+  UC:{name:'Upper C', type:'U', blocks:{
+    Chest:[['Machine Chest Press',2,'6-10',180,['Chest']],
+           ['Low-to-High Cable Fly',2,'6-10',180,['Chest']]],
+    Back:[['Single-Arm Lat Pulldown',2,'6-10',180,['Back']],
+          ['Neutral Grip Chest Supported Row',2,'6-10',180,['Back']]],
+    Shoulders:[['Dumbbell Y-Raises',2,'10-15',120,['Shoulders']],
+               ['Single Arm Rear Delt Fly',2,'10-15',120,['Shoulders']]],
+    Arms:[['Dumbbell Hammer Curl',2,'10-15',120,['Biceps']],
+          ['DB Skull Crushers',2,'10-15',120,['Triceps']]]}},
   LA:{name:'Lower A', type:'L', ex:[
     ['Barbell Hip Thrust',2,'6-10',180,['Glutes']],
-    ['DB Bulgarian Split Squat',2,'6-10',180,['Quads','Glutes']],
-    ['Barbell Romanian Deadlift',2,'6-10',180,['Hamstrings','Glutes']],
+    ['DB Bulgarian Split Squat',2,'6-10',180,['Glutes']],
+    ['Barbell Romanian Deadlift',2,'6-10',180,['Glutes']],
     ['Abductor Machine · Upright',2,'12-15',120,['Glutes']],
     ['Leg Extension',2,'12-15',120,['Quads']],
     ['Machine Hip Adduction',2,'12-15',120,['Adductors']],
@@ -494,8 +497,8 @@ const PROGRAM = {
     ['Cable Crunch',2,'12-15',120,['Abs']]]},
   LB:{name:'Lower B', type:'L', ex:[
     ['Barbell Hip Thrust',2,'6-10',180,['Glutes']],
-    ['Belt Squat',2,'6-10',180,['Quads']],
-    ['45° Hyperextension',2,'6-10',180,['Glutes','Hamstrings']],
+    ['Belt Squat',2,'6-10',180,['Glutes']],
+    ['45° Hyperextension',2,'6-10',180,['Glutes']],
     ['Abductor Machine · Lean Forward',2,'12-15',120,['Glutes']],
     ['Single-Leg Leg Extension',2,'12-15',120,['Quads']],
     ['Machine Hip Adduction',2,'12-15',120,['Adductors']],
@@ -503,8 +506,8 @@ const PROGRAM = {
     ['Cable Crunch',2,'12-15',120,['Abs']]]},
   LC:{name:'Lower C', type:'L', ex:[
     ['Barbell Hip Thrust',2,'6-10',180,['Glutes']],
-    ['FFE Barbell Reverse Lunge',2,'6-10',180,['Quads','Glutes']],
-    ['B-Stance Romanian Deadlift',2,'6-10',180,['Hamstrings','Glutes']],
+    ['FFE Barbell Reverse Lunge',2,'6-10',180,['Glutes']],
+    ['B-Stance Romanian Deadlift',2,'6-10',180,['Glutes']],
     ['Abductor Machine · Lean Back',2,'12-15',120,['Glutes']],
     ['Machine Leg Extension · Rest Pause',2,'12-15',120,['Quads']],
     ['Machine Hip Adduction',2,'12-15',120,['Adductors']],
@@ -512,12 +515,24 @@ const PROGRAM = {
     ['Cable Crunch',2,'12-15',120,['Abs']]]}
 };
 
+/* the three body-part blocks rotate which one leads; Arms always closes the
+   session — the note that prompted this only ever named chest/back/shoulders */
+const LEAD_ORDERS=[['Chest','Back','Shoulders'],['Back','Shoulders','Chest'],['Shoulders','Chest','Back']];
+function upperExercises(key,lead){
+  const b=PROGRAM[key].blocks;
+  return LEAD_ORDERS[lead].flatMap(m=>b[m]).concat(b.Arms);
+}
+function sessionExerciseDefs(key,lead){
+  const p=PROGRAM[key];
+  return p.type==='U' ? upperExercises(key,lead) : p.ex;
+}
+
 /* one lift was renamed — keep its history attached to the new name */
 const ALIAS={'Chest Supported Rows · Neutral Grip':'Neutral Grip Chest Supported Row'};
 const canon=n=>ALIAS[n]||n;
 const ORDER=['UA','UB','UC','LA','LB','LC'];
-const TRACKED=['Chest','Back','Shoulders','Rear Delts','Biceps','Triceps',
-  'Glutes','Quads','Hamstrings','Adductors','Calves','Abs'];
+const TRACKED=['Chest','Back','Shoulders','Biceps','Triceps',
+  'Glutes','Quads','Adductors','Calves','Abs'];
 
 /* ============ DB ============ */
 const DB={h:null};
@@ -590,11 +605,9 @@ function setsByTarget(from){
   SESSIONS.filter(s=>s.status==='completed'&&s.date>=from).forEach(s=>{
     s.exercises.forEach(e=>{
       const done=e.sets.filter(x=>x.done).length;
-      if(!done||!e.targets)return;
-      /* first target is the muscle the exercise is FOR — full credit. anything
-         after it is secondary involvement — half. An even split would have made
-         a hip thrust worth half a glute set. */
-      e.targets.forEach((t,i)=>{map[t]=(map[t]||0)+done*(i===0?1:0.5);});
+      const t=e.targets&&e.targets[0];
+      if(!done||!t)return;
+      map[t]=(map[t]||0)+done;
     });
   });
   return map;
@@ -630,60 +643,94 @@ function lastOfType(t){
   }
   return null;
 }
-function nextKey(){
-  const done=SESSIONS.filter(s=>s.status==='completed'&&PROGRAM[s.dayKey]);
-  const last=done.length?done[done.length-1]:null;
-  const type = last ? (PROGRAM[last.dayKey].type==='U'?'L':'U') : 'U';
-  const ring = type==='U' ? ['UA','UB','UC'] : ['LA','LB','LC'];
-  const prev = lastOfType(type);
-  if(!prev) return ring[0];
-  const i = ring.indexOf(prev.dayKey);
-  return ring[(i+1)%ring.length];
+function lastUpperMeta(){
+  const s=lastOfType('U');
+  return s ? {key:s.dayKey, lead:(s.leadIdx!=null?s.leadIdx:0)} : null;
 }
+/* Projects the rotation forward n sessions: strict U/L alternation; within
+   upper, cycle all 3 lead orders for a set before advancing to the next set
+   (9 sessions before anything repeats); lower keeps its plain 3-way ring.
+   Pure function of history, so an override just changes what the next
+   projection branches from — nothing to reset. */
+function forecast(n){
+  const done=SESSIONS.filter(s=>s.status==='completed'&&PROGRAM[s.dayKey]);
+  let lastType = done.length ? PROGRAM[done[done.length-1].dayKey].type : null;
+  let up = lastUpperMeta();
+  const lo = lastOfType('L');
+  let lowKey = lo ? lo.dayKey : null;
+  const out=[];
+  for(let i=0;i<n;i++){
+    const type = lastType ? (lastType==='U'?'L':'U') : 'U';
+    if(type==='U'){
+      if(!up) up={key:'UA',lead:0};
+      else if(up.lead<2) up={key:up.key, lead:up.lead+1};
+      else { const ring=['UA','UB','UC']; up={key:ring[(ring.indexOf(up.key)+1)%3], lead:0}; }
+      out.push({key:up.key, lead:up.lead});
+    } else {
+      const ring=['LA','LB','LC'];
+      lowKey = !lowKey ? ring[0] : ring[(ring.indexOf(lowKey)+1)%3];
+      out.push({key:lowKey, lead:null});
+    }
+    lastType=type;
+  }
+  return out;
+}
+
+function leadLabel(lead){ return lead==null ? '' : LEAD_ORDERS[lead][0]+' lead'; }
 
 function renderHome(){
   $('hsub').innerHTML='<span class="cist">'+cistercian(META.currentCycle)+'</span>'+
     'Cycle '+META.currentCycle+' · Week '+weekOfCycle();
 
-  const suggested=nextKey();
-  const card=(k,big)=>{
-    const p=PROGRAM[k];
-    const prev=SESSIONS.filter(s=>s.dayKey===k&&s.status==='completed').pop();
-    const ago=prev?daysAgo(prev.date):null;
-    const agoTxt=prev?(ago===0?'today':ago===1?'1 day':ago+' days'):'never';
-    const sets=p.ex.reduce((a,e)=>a+e[1],0);
-    const b=document.createElement('button');
-    b.className=big?'nextCard':'altCard';
-    b.dataset.k=k;
-    b.innerHTML = big
-      ? '<span class="lbl">Next up</span><span class="nm">'+p.name+'</span>'+
-        '<span class="meta">'+p.ex.length+' exercises · '+sets+' sets</span>'+
-        '<span class="ago">last · '+agoTxt+'</span>'
-      : '<span class="nm">'+p.name+'</span><span class="ago">'+agoTxt+'</span>';
-    b.onclick=()=>startSession(k);
-    return b;
-  };
+  const fc=forecast(6);
   const d=$('days'); d.innerHTML='';
-  d.appendChild(card(suggested,true));
-  const alt=document.createElement('div'); alt.className='altGrid';
-  ORDER.filter(k=>k!==suggested).forEach(k=>alt.appendChild(card(k,false)));
+
+  const first=fc[0], p0=PROGRAM[first.key];
+  const prev=SESSIONS.filter(s=>s.dayKey===first.key&&s.status==='completed').pop();
+  const ago=prev?daysAgo(prev.date):null;
+  const agoTxt=prev?(ago===0?'today':ago===1?'1 day':ago+' days'):'never';
+  const defs0=sessionExerciseDefs(first.key,first.lead);
+  const sets0=defs0.reduce((a,e)=>a+e[1],0);
+  const big=document.createElement('button');
+  big.className='nextCard';
+  big.innerHTML='<span class="lbl">Next up</span>'+
+    '<span class="nm">'+p0.name+(first.lead!=null?' · '+leadLabel(first.lead):'')+'</span>'+
+    '<span class="meta">'+defs0.length+' exercises · '+sets0+' sets</span>'+
+    '<span class="ago">last · '+agoTxt+'</span>';
+  big.onclick=()=>startSession(first.key,first.lead);
+  d.appendChild(big);
+
   const hdr=document.createElement('div');
-  hdr.className='lbl'; hdr.style.cssText='margin:26px 0 10px';
-  hdr.textContent='Or pick another';
-  d.appendChild(hdr); d.appendChild(alt);
+  hdr.className='lbl'; hdr.style.cssText='margin:24px 0 10px';
+  hdr.textContent='Queue';
+  d.appendChild(hdr);
+
+  const list=document.createElement('div'); list.className='queueList';
+  fc.slice(1).forEach((f,i)=>{
+    const p=PROGRAM[f.key];
+    const row=document.createElement('button');
+    row.className='queueRow';
+    row.innerHTML='<span class="n">'+(i+2)+'</span>'+
+      '<span class="body"><span class="nm">'+p.name+'</span>'+
+      (f.lead!=null?'<span class="lead">'+leadLabel(f.lead)+'</span>':'')+'</span>';
+    row.onclick=()=>startSession(f.key,f.lead);
+    list.appendChild(row);
+  });
+  d.appendChild(list);
 }
 
 /* ============ SESSION ============ */
-function startSession(key){
+function startSession(key,lead){
   const p=PROGRAM[key];
+  const defs=sessionExerciseDefs(key,lead);
   S={
     id:String(Date.now()),
     date:today(),
     startedAt:Date.now(), endedAt:null,
     cycle:META.currentCycle,
-    dayKey:key, dayName:p.name,
+    dayKey:key, dayName:p.name, leadIdx:(p.type==='U'?lead:null),
     status:'active',
-    exercises:p.ex.map(e=>({
+    exercises:defs.map(e=>({
       name:e[0], prescribed:e[1], repRange:e[2], restSec:e[3], targets:e[4],
       skipped:false, notes:'',
       sets:Array.from({length:e[1]},(_,i)=>({n:i+1,weight:null,reps:null,done:false,ts:null}))
@@ -700,7 +747,7 @@ function startSession(key){
 }
 
 function renderSession(){
-  $('sessName').textContent=S.dayName;
+  $('sessName').textContent=S.dayName+(S.leadIdx!=null?' · '+leadLabel(S.leadIdx):'');
   const list=$('exList');
   const keep=list.scrollTop;          // logging a set rebuilds the list — don't lose their place
   list.innerHTML='';
