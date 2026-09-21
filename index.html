@@ -530,6 +530,11 @@ function sessionExerciseDefs(key,lead){
 /* one lift was renamed — keep its history attached to the new name */
 const ALIAS={'Chest Supported Rows · Neutral Grip':'Neutral Grip Chest Supported Row'};
 const canon=n=>ALIAS[n]||n;
+/* muscle names retired from TRACKED — old sessions still carry them in their
+   stored snapshot, so fold them into their new home wherever a target is read
+   or displayed, rather than letting them silently vanish from the count */
+const TARGET_ALIAS={'Rear Delts':'Shoulders','Hamstrings':'Glutes'};
+const normTarget=t=>TARGET_ALIAS[t]||t;
 const ORDER=['UA','UB','UC','LA','LB','LC'];
 const TRACKED=['Chest','Back','Shoulders','Biceps','Triceps',
   'Glutes','Quads','Adductors','Calves','Abs'];
@@ -605,7 +610,7 @@ function setsByTarget(from){
   SESSIONS.filter(s=>s.status==='completed'&&s.date>=from).forEach(s=>{
     s.exercises.forEach(e=>{
       const done=e.sets.filter(x=>x.done).length;
-      const t=e.targets&&e.targets[0];
+      const t=normTarget(e.targets&&e.targets[0]);
       if(!done||!t)return;
       map[t]=(map[t]||0)+done;
     });
@@ -766,7 +771,7 @@ function renderSession(){
 
     div.innerHTML=
       '<div class="exhead"><span class="num">'+pad(ei+1)+'</span><h3>'+e.name+'</h3></div>'+
-      '<div class="exmeta">'+e.sets.length+' × '+e.repRange+' · '+(e.restSec>=120?(e.restSec/60)+' min':e.restSec+'s')+' rest · '+e.targets.join(' / ')+'</div>'+
+      '<div class="exmeta">'+e.sets.length+' × '+e.repRange+' · '+(e.restSec>=120?(e.restSec/60)+' min':e.restSec+'s')+' rest · '+[...new Set(e.targets.map(normTarget))].join(' / ')+'</div>'+
       lastHtml+
       (e.skipped?'':'<div class="sets">'+e.sets.map((s,si)=>{
         const pb=prev&&(s.weight*s.reps)>best(prev.sets)&&s.done;
@@ -1220,7 +1225,7 @@ function renderDetail(s){
     const pr=recNames[e.name];
     h+='<div class="dtEx'+(done.length?'':' sk')+'">'+
        '<h5>'+e.name+(pr?' <span style="color:var(--crimson);font-size:12px">· record</span>':'')+'</h5>'+
-       '<div class="tg">'+(e.targets?e.targets.join(' / '):'')+(e.repRange?' · '+e.repRange:'')+'</div>';
+       '<div class="tg">'+(e.targets?[...new Set(e.targets.map(normTarget))].join(' / '):'')+(e.repRange?' · '+e.repRange:'')+'</div>';
     if(done.length){
       const bestE=Math.max.apply(null,done.map(x=>e1rm(x.weight,x.reps)));
       h+='<div class="dtSets">'+done.map(x=>{

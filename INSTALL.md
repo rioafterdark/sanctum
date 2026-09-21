@@ -115,6 +115,12 @@ for the first fortnight until you have history to beat.
   into Shoulders the same way.
 - Volume tracks ten muscles: Chest, Back, Shoulders, Biceps, Triceps, Glutes, Quads,
   Adductors, Calves, Abs. Hamstrings and Rear Delts are no longer tracked separately.
+- Sessions logged before this change still say "Rear Delts" or "Hamstrings" in their
+  stored data — that's an honest record of what the exercise was tagged at the time, so
+  it isn't rewritten. Instead, anywhere a target is read or displayed, those two retired
+  names are folded live into Shoulders and Glutes: the Volume tab counts them correctly,
+  and History shows the current name rather than the old one. Nothing before this point
+  needs re-logging.
 
 ## Session card
 
