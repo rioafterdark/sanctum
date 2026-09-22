@@ -93,12 +93,12 @@ for the first fortnight until you have history to beat.
 
 ## What changed from the old app
 
-- Routine is six workouts — Upper A/B/C and Lower A/B/C — but each Upper session now
-  also rotates which body part leads: chest, back, or shoulders. The three exercise sets
-  and three lead orders combine into nine distinct upper sessions (A-chest, A-back,
-  A-shoulders, B-chest, …) before anything repeats — about 9 weeks at your frequency to
-  see the whole cycle once. Arms always close the session; only chest, back and shoulders
-  reorder.
+- Routine is six workouts — Upper A/B/C and Lower A/B/C — and each Upper session also
+  rotates which body part leads: chest, back, or shoulders. Both axes move every single
+  upper session — you never repeat the same exercise set twice running, and the lead
+  never holds still either. All nine combinations (A-chest, B-back, C-shoulders, A-back,
+  B-shoulders, C-chest, A-shoulders, B-chest, C-back) show up once each before the cycle
+  repeats. Arms always close the session; only chest, back and shoulders reorder.
 - Five sessions a week, alternating upper and lower, same as before. Everything is derived
   from your actual session history, so overriding the suggestion (jumping to any workout in
   the queue) doesn't need a reset — the next suggestion just branches from whatever you

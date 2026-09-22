@@ -652,11 +652,23 @@ function lastUpperMeta(){
   const s=lastOfType('U');
   return s ? {key:s.dayKey, lead:(s.leadIdx!=null?s.leadIdx:0)} : null;
 }
-/* Projects the rotation forward n sessions: strict U/L alternation; within
-   upper, cycle all 3 lead orders for a set before advancing to the next set
-   (9 sessions before anything repeats); lower keeps its plain 3-way ring.
+/* Projects the rotation forward n sessions: strict U/L alternation; lower
+   keeps its plain 3-way ring. Upper uses a diagonal rotation — set (A/B/C)
+   advances every upper session, lead advances every upper session too, offset
+   by a phase that bumps once per lap of the set ring. That covers all 9
+   set×lead combinations before repeating, with neither axis ever holding
+   still two sessions running — no "A three times before B" the way a nested
+   cycle-the-leads-first-then-advance scheme would.
    Pure function of history, so an override just changes what the next
    projection branches from — nothing to reset. */
+function nextUpper(prevKey,prevLead){
+  const ring=['UA','UB','UC'];
+  const setIdx=ring.indexOf(prevKey);
+  let k=((prevLead-setIdx)%3+3)%3;
+  const setIdx2=(setIdx+1)%3;
+  if(setIdx2===0) k=(k+1)%3;
+  return {key:ring[setIdx2], lead:(setIdx2+k)%3};
+}
 function forecast(n){
   const done=SESSIONS.filter(s=>s.status==='completed'&&PROGRAM[s.dayKey]);
   let lastType = done.length ? PROGRAM[done[done.length-1].dayKey].type : null;
@@ -667,9 +679,7 @@ function forecast(n){
   for(let i=0;i<n;i++){
     const type = lastType ? (lastType==='U'?'L':'U') : 'U';
     if(type==='U'){
-      if(!up) up={key:'UA',lead:0};
-      else if(up.lead<2) up={key:up.key, lead:up.lead+1};
-      else { const ring=['UA','UB','UC']; up={key:ring[(ring.indexOf(up.key)+1)%3], lead:0}; }
+      up = !up ? {key:'UA',lead:0} : nextUpper(up.key,up.lead);
       out.push({key:up.key, lead:up.lead});
     } else {
       const ring=['LA','LB','LC'];
