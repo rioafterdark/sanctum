@@ -127,7 +127,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .set.ok .tick svg{stroke:var(--ossa)}
 .set.pr .fld input{border-color:var(--sanguis)}
 
-.exacts{margin:13px 0 0 26px;display:flex;gap:18px}
+.exacts{margin:13px 0 0 26px;display:flex;flex-wrap:wrap;gap:6px 18px}
 .exacts button{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:6px 0}
 .exacts button:active{color:var(--ossa)}
 
@@ -157,6 +157,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
   padding:22px 18px calc(16px + env(safe-area-inset-bottom))}
 .foot .in{max-width:560px;margin:0 auto;display:flex;gap:8px}
 .foot .in .btn{padding:16px 3px;letter-spacing:.06em;font-size:10px}
+.foot .in .btn.gh{padding:16px 20px;letter-spacing:.14em}
 .btn{flex:1;padding:16px;border:1px solid var(--edge);background:var(--crypt);
   font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;text-align:center;font-weight:600}
 .btn:active{background:var(--cinis)}
@@ -165,8 +166,10 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .btn.hold{position:relative;overflow:hidden;touch-action:none}
 .btn.hold i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--crimson);
   opacity:.85;transition:width 0s linear}
-.btn.hold.arming i{width:100%;transition:width 1.1s linear}
+.btn.hold.arming i{width:100%;transition:width var(--hold,1.1s) linear}
 .btn.hold span{position:relative;z-index:1}
+.btn.hold.arming span{color:var(--ossa)}
+.btn.dangerBtn{color:var(--crimson);border-color:var(--sanguis-lo)}
 
 /* ---- history / settings ---- */
 .sec{padding:22px 18px 6px}
@@ -274,6 +277,7 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .nextCard:active{background:var(--cinis)}
 .nextCard .lbl{display:block;color:var(--crimson);margin-bottom:9px}
 .nextCard .nm{display:block;font-family:var(--serif);font-size:27px;letter-spacing:.03em;margin-bottom:7px}
+.nextCard .ord{display:block;font-size:13px;letter-spacing:.05em;color:var(--ossa);margin-bottom:9px}
 .nextCard .meta{display:block;font-size:11.5px;color:var(--ash);margin-bottom:4px}
 .nextCard .ago{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
 .queueList{display:flex;flex-direction:column;gap:7px}
@@ -293,6 +297,35 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .volStat{display:flex;gap:26px;padding:16px 18px 4px}
 .volStat .k{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:6px}
 .volStat .v{font-family:var(--mono);font-size:19px;color:var(--ossa)}
+/* ---- exercise notes, swaps, sheets ---- */
+textarea,input{-webkit-user-select:text;user-select:text}
+.exnote{margin:10px 0 0 26px;padding:2px 0 2px 11px;border-left:2px solid var(--crimson);
+  font-size:12.5px;line-height:1.55;color:var(--ossa);white-space:pre-wrap;word-break:break-word}
+.swapd{margin:0 0 3px 26px;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--crimson)}
+.ovl{position:fixed;inset:0;z-index:75;display:none;justify-content:center;
+  background:rgba(6,6,7,.8);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.ovl.on{display:flex}
+.ovl.bot{align-items:flex-end}
+.ovl.top{align-items:flex-start;padding-top:calc(env(safe-area-inset-top) + 9vh)}
+.ovl .sheet{width:100%;max-width:560px;background:var(--crypt);border:1px solid var(--edge);
+  border-top:1px solid var(--crimson);padding:22px 18px 18px}
+.ovl.bot .sheet{max-height:82vh;overflow-y:auto;border-bottom:0;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+.ovl.top .sheet{width:calc(100% - 36px);border:1px solid var(--edge);border-top:1px solid var(--crimson)}
+.sheet .ttl{font-family:var(--serif);font-size:19px;line-height:1.3;margin:6px 0 4px}
+#noteTa{width:100%;min-height:116px;background:var(--nox);border:1px solid var(--edge);color:var(--ossa);
+  font-family:var(--sys);font-size:16px;padding:12px;border-radius:0;-webkit-appearance:none;
+  resize:none;line-height:1.5;margin:12px 0 8px}
+#noteTa:focus{border-color:var(--ash);outline:none}
+#noteTa::placeholder{color:var(--dim)}
+.sheet .fine{font-size:11px;color:var(--dim);line-height:1.6;margin:0 0 16px}
+.sheet .btns{display:flex;gap:9px}
+.swHd{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);font-weight:600;margin:20px 0 4px}
+.swRow{display:block;width:100%;text-align:left;padding:13px 2px;border-bottom:1px solid var(--stone)}
+.swRow:active{background:var(--cinis)}
+.swRow .nm{display:block;font-family:var(--serif);font-size:16px;line-height:1.3;margin-bottom:4px}
+.swRow .mt{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.swRow.orig .nm{color:var(--crimson)}
+.swEmpty{font-size:12.5px;color:var(--dim);line-height:1.6;padding:8px 0}
 #toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,14px);z-index:60;
   background:var(--stone);border:1px solid var(--edge);padding:11px 17px;font-size:12px;
   opacity:0;transition:.25s;pointer-events:none;max-width:88vw;text-align:center}
@@ -425,7 +458,10 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
       <div class="dtStats" id="dtStats"></div>
       <div id="dtBody"></div>
     </div>
-    <div class="foot"><div class="in"><button class="btn" id="dtBack">Back</button></div></div>
+    <div class="foot"><div class="in">
+      <button class="btn" id="dtBack">Back</button>
+      <button class="btn hold dangerBtn" id="dtDelete"><i></i><span>Hold to delete</span></button>
+    </div></div>
   </section>
 </div>
 
@@ -451,6 +487,28 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
   </div>
   <div class="dismiss">Tap outside to hide · timer keeps running</div>
 </div></div>
+
+<div id="noteOv" class="ovl top" role="dialog" aria-label="Exercise note">
+  <div class="sheet">
+    <div class="lbl">Exercise note</div>
+    <div class="ttl" id="noteFor">—</div>
+    <textarea id="noteTa" placeholder="Machine settings, cues, anything worth seeing next time"></textarea>
+    <p class="fine">Stays with this exercise and shows every time it appears, in any workout.</p>
+    <div class="btns">
+      <button class="btn" id="noteCancel">Cancel</button>
+      <button class="btn pri" id="noteSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="swapOv" class="ovl bot" role="dialog" aria-label="Swap exercise">
+  <div class="sheet">
+    <div class="lbl">This session only</div>
+    <div class="ttl" id="swapFor">—</div>
+    <div id="swapList"></div>
+    <div class="btns" style="margin-top:18px"><button class="btn" id="swapCancel">Cancel</button></div>
+  </div>
+</div>
 
 <div id="toast"></div>
 
@@ -515,16 +573,32 @@ const PROGRAM = {
     ['Cable Crunch',2,'12-15',120,['Abs']]]}
 };
 
-/* the three body-part blocks rotate which one leads; Arms always closes the
-   session — the note that prompted this only ever named chest/back/shoulders */
+/* Upper sessions reorder three body-part blocks — chest, back, shoulders — with
+   Arms always closing. Each set owns a lead: A opens with chest, B with back, C
+   with shoulders, so the lead cycles evenly as the sets do. What varies is the
+   order of the other two, which flips direction every lap of A→B→C. Six distinct
+   sessions cover every ordering of the three blocks. */
+const CYC=['Chest','Back','Shoulders'];
+const LEAD_OF={UA:'Chest',UB:'Back',UC:'Shoulders'};
+/* sessions logged before this stored an index into this list instead of an order */
 const LEAD_ORDERS=[['Chest','Back','Shoulders'],['Back','Shoulders','Chest'],['Shoulders','Chest','Back']];
-function upperExercises(key,lead){
-  const b=PROGRAM[key].blocks;
-  return LEAD_ORDERS[lead].flatMap(m=>b[m]).concat(b.Arms);
+function orderFor(lead,fwd){
+  const i=CYC.indexOf(lead), nx=CYC[(i+1)%3], pv=CYC[(i+2)%3];
+  return fwd ? [lead,nx,pv] : [lead,pv,nx];
 }
-function sessionExerciseDefs(key,lead){
+function isFwd(order){ return order[1]===CYC[(CYC.indexOf(order[0])+1)%3]; }
+function sessOrder(s){
+  if(s.order) return s.order;
+  if(s.leadIdx!=null) return LEAD_ORDERS[s.leadIdx];
+  return PROGRAM[s.dayKey]&&PROGRAM[s.dayKey].type==='U' ? LEAD_ORDERS[0] : null;
+}
+function upperExercises(key,order){
+  const b=PROGRAM[key].blocks;
+  return order.flatMap(m=>b[m]).concat(b.Arms);
+}
+function sessionExerciseDefs(key,order){
   const p=PROGRAM[key];
-  return p.type==='U' ? upperExercises(key,lead) : p.ex;
+  return p.type==='U' ? upperExercises(key,order) : p.ex;
 }
 
 /* one lift was renamed — keep its history attached to the new name */
@@ -557,6 +631,7 @@ function del(store,key){return new Promise((res,rej)=>{const r=tx(store,'readwri
 /* ============ STATE ============ */
 let META={version:3,currentCycle:1,cycleStartDate:'2026-07-02'};
 let SESSIONS=[];
+let NOTES={};            // exercise notes, keyed by canonical exercise name
 let S=null;              // active session
 let tick=null, restEnd=0, restTotal=0, restTick=null;
 
@@ -650,24 +725,22 @@ function lastOfType(t){
 }
 function lastUpperMeta(){
   const s=lastOfType('U');
-  return s ? {key:s.dayKey, lead:(s.leadIdx!=null?s.leadIdx:0)} : null;
+  return s ? {key:s.dayKey, order:sessOrder(s)} : null;
 }
-/* Projects the rotation forward n sessions: strict U/L alternation; lower
-   keeps its plain 3-way ring. Upper uses a diagonal rotation — set (A/B/C)
-   advances every upper session, lead advances every upper session too, offset
-   by a phase that bumps once per lap of the set ring. That covers all 9
-   set×lead combinations before repeating, with neither axis ever holding
-   still two sessions running — no "A three times before B" the way a nested
-   cycle-the-leads-first-then-advance scheme would.
+/* Projects the rotation forward n sessions: strict U/L alternation; lower keeps
+   its plain 3-way ring. Upper: sets go A→B→C every upper session, each with its
+   own lead (LEAD_OF), and the order of the other two blocks flips direction at
+   the start of every lap — whenever A comes round again. So any three uppers in
+   a row have three different leads, and no set ever repeats back-to-back.
    Pure function of history, so an override just changes what the next
    projection branches from — nothing to reset. */
-function nextUpper(prevKey,prevLead){
+function nextUpper(prev){
+  if(!prev) return {key:'UA', order:orderFor('Chest',false)};
   const ring=['UA','UB','UC'];
-  const setIdx=ring.indexOf(prevKey);
-  let k=((prevLead-setIdx)%3+3)%3;
-  const setIdx2=(setIdx+1)%3;
-  if(setIdx2===0) k=(k+1)%3;
-  return {key:ring[setIdx2], lead:(setIdx2+k)%3};
+  const key=ring[(ring.indexOf(prev.key)+1)%3];
+  let fwd=isFwd(prev.order);
+  if(key==='UA') fwd=!fwd;
+  return {key, order:orderFor(LEAD_OF[key],fwd)};
 }
 function forecast(n){
   const done=SESSIONS.filter(s=>s.status==='completed'&&PROGRAM[s.dayKey]);
@@ -679,19 +752,19 @@ function forecast(n){
   for(let i=0;i<n;i++){
     const type = lastType ? (lastType==='U'?'L':'U') : 'U';
     if(type==='U'){
-      up = !up ? {key:'UA',lead:0} : nextUpper(up.key,up.lead);
-      out.push({key:up.key, lead:up.lead});
+      up = nextUpper(up);
+      out.push({key:up.key, order:up.order});
     } else {
       const ring=['LA','LB','LC'];
       lowKey = !lowKey ? ring[0] : ring[(ring.indexOf(lowKey)+1)%3];
-      out.push({key:lowKey, lead:null});
+      out.push({key:lowKey, order:null});
     }
     lastType=type;
   }
   return out;
 }
 
-function leadLabel(lead){ return lead==null ? '' : LEAD_ORDERS[lead][0]+' lead'; }
+function orderLabel(o){ return o ? o.join(' → ') : ''; }
 
 function renderHome(){
   $('hsub').innerHTML='<span class="cist">'+cistercian(META.currentCycle)+'</span>'+
@@ -704,15 +777,16 @@ function renderHome(){
   const prev=SESSIONS.filter(s=>s.dayKey===first.key&&s.status==='completed').pop();
   const ago=prev?daysAgo(prev.date):null;
   const agoTxt=prev?(ago===0?'today':ago===1?'1 day':ago+' days'):'never';
-  const defs0=sessionExerciseDefs(first.key,first.lead);
+  const defs0=sessionExerciseDefs(first.key,first.order);
   const sets0=defs0.reduce((a,e)=>a+e[1],0);
   const big=document.createElement('button');
   big.className='nextCard';
   big.innerHTML='<span class="lbl">Next up</span>'+
-    '<span class="nm">'+p0.name+(first.lead!=null?' · '+leadLabel(first.lead):'')+'</span>'+
+    '<span class="nm">'+p0.name+'</span>'+
+    (first.order?'<span class="ord">'+orderLabel(first.order)+'</span>':'')+
     '<span class="meta">'+defs0.length+' exercises · '+sets0+' sets</span>'+
     '<span class="ago">last · '+agoTxt+'</span>';
-  big.onclick=()=>startSession(first.key,first.lead);
+  big.onclick=()=>startSession(first.key,first.order);
   d.appendChild(big);
 
   const hdr=document.createElement('div');
@@ -727,23 +801,23 @@ function renderHome(){
     row.className='queueRow';
     row.innerHTML='<span class="n">'+(i+2)+'</span>'+
       '<span class="body"><span class="nm">'+p.name+'</span>'+
-      (f.lead!=null?'<span class="lead">'+leadLabel(f.lead)+'</span>':'')+'</span>';
-    row.onclick=()=>startSession(f.key,f.lead);
+      (f.order?'<span class="lead">'+orderLabel(f.order)+'</span>':'')+'</span>';
+    row.onclick=()=>startSession(f.key,f.order);
     list.appendChild(row);
   });
   d.appendChild(list);
 }
 
 /* ============ SESSION ============ */
-function startSession(key,lead){
+function startSession(key,order){
   const p=PROGRAM[key];
-  const defs=sessionExerciseDefs(key,lead);
+  const defs=sessionExerciseDefs(key,order);
   S={
     id:String(Date.now()),
     date:today(),
     startedAt:Date.now(), endedAt:null,
     cycle:META.currentCycle,
-    dayKey:key, dayName:p.name, leadIdx:(p.type==='U'?lead:null),
+    dayKey:key, dayName:p.name, order:(p.type==='U'?order:null),
     status:'active',
     exercises:defs.map(e=>({
       name:e[0], prescribed:e[1], repRange:e[2], restSec:e[3], targets:e[4],
@@ -762,7 +836,8 @@ function startSession(key,lead){
 }
 
 function renderSession(){
-  $('sessName').textContent=S.dayName+(S.leadIdx!=null?' · '+leadLabel(S.leadIdx):'');
+  const so=PROGRAM[S.dayKey].type==='U'?sessOrder(S):null;
+  $('sessName').textContent=S.dayName+(so?' · '+so[0]+' lead':'');
   const list=$('exList');
   const keep=list.scrollTop;          // logging a set rebuilds the list — don't lose their place
   list.innerHTML='';
@@ -779,10 +854,16 @@ function renderSession(){
         prev.sets.map(s=>'<b>'+s.weight+'</b>×'+s.reps).join(' &nbsp; ')+'</div>';
     } else {lastHtml='<div class="last none">No previous record</div>';}
 
+    const nt=NOTES[canon(e.name)];
+    const anyDone=e.sets.some(s=>s.done);
+    const opts=swapOptions(e);
+    const canSwap=!e.skipped&&!anyDone&&(!!e.subOf||opts.close.length+opts.rest.length>0);
     div.innerHTML=
-      '<div class="exhead"><span class="num">'+pad(ei+1)+'</span><h3>'+e.name+'</h3></div>'+
+      '<div class="exhead"><span class="num">'+pad(ei+1)+'</span><h3>'+esc(e.name)+'</h3></div>'+
       '<div class="exmeta">'+e.sets.length+' × '+e.repRange+' · '+(e.restSec>=120?(e.restSec/60)+' min':e.restSec+'s')+' rest · '+[...new Set(e.targets.map(normTarget))].join(' / ')+'</div>'+
+      (e.subOf?'<div class="swapd">In place of '+esc(e.subOf)+'</div>':'')+
       lastHtml+
+      (nt?'<div class="exnote" data-act="note" data-e="'+ei+'">'+esc(nt)+'</div>':'')+
       (e.skipped?'':'<div class="sets">'+e.sets.map((s,si)=>{
         const pb=prev&&(s.weight*s.reps)>best(prev.sets)&&s.done;
         return '<div class="set'+(s.done?' ok':'')+(pb?' pr':'')+'" data-e="'+ei+'" data-s="'+si+'">'+
@@ -794,6 +875,8 @@ function renderSession(){
       '<div class="exacts">'+
         '<button data-act="skip" data-e="'+ei+'">'+(e.skipped?'Restore':'Skip exercise')+'</button>'+
         (e.skipped?'':'<button data-act="addset" data-e="'+ei+'">Add set</button>')+
+        (canSwap?'<button data-act="swap" data-e="'+ei+'">Swap</button>':'')+
+        '<button data-act="note" data-e="'+ei+'">'+(nt?'Edit note':'Note')+'</button>'+
       '</div>';
     list.appendChild(div);
   });
@@ -819,8 +902,10 @@ $('exList').addEventListener('input',ev=>{
 $('exList').addEventListener('click',ev=>{
   const act=ev.target.closest('[data-act]');
   if(act){
-    const e=S.exercises[+act.dataset.e];
-    if(act.dataset.act==='skip'){e.skipped=!e.skipped;}
+    const e=S.exercises[+act.dataset.e], a=act.dataset.act;
+    if(a==='swap'){openSwap(+act.dataset.e);return;}
+    if(a==='note'){openNote(e.name);return;}
+    if(a==='skip'){e.skipped=!e.skipped;}
     else{e.sets.push({n:e.sets.length+1,weight:null,reps:null,done:false,ts:null});}
     save();renderSession();return;
   }
@@ -835,6 +920,111 @@ $('exList').addEventListener('click',ev=>{
   }else{s.done=false;s.ts=null;}
   save();renderSession();
 });
+
+/* ============ SWAP + NOTES ============ */
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* a workout's exercises in a fixed canonical order (upper blocks are stored by muscle) */
+function allDefs(key){
+  const p=PROGRAM[key];
+  return p.type==='U' ? ['Chest','Back','Shoulders','Arms'].flatMap(m=>p.blocks[m]) : p.ex;
+}
+/* position of an exercise among the same-muscle exercises of its own workout —
+   lets a swap offer the like-for-like slot in the other workouts first */
+function tagPos(key,name){
+  const defs=allDefs(key), d=defs.find(x=>canon(x[0])===canon(name));
+  return d ? defs.filter(x=>x[4][0]===d[4][0]).indexOf(d) : -1;
+}
+/* the "database" is the program itself: same-muscle exercises from the other two
+   workouts of the same kind (Upper→other uppers, Lower→other lowers) */
+function swapOptions(e){
+  const none={orig:null,origDef:null,close:[],rest:[]};
+  const slot=e.subOf||e.name;
+  const d=allDefs(S.dayKey).find(x=>canon(x[0])===canon(slot));
+  if(!d) return none;
+  const tag=d[4][0], pos=tagPos(S.dayKey,slot), type=PROGRAM[S.dayKey].type;
+  const used=new Set(S.exercises.map(x=>canon(x.name)));
+  const seen=new Map();
+  ORDER.filter(k=>k!==S.dayKey&&PROGRAM[k].type===type).forEach(k=>{
+    allDefs(k).forEach(x=>{
+      if(x[4][0]!==tag) return;
+      const c=canon(x[0]); if(used.has(c)) return;
+      const close=tagPos(k,x[0])===pos;
+      const cur=seen.get(c);
+      if(!cur) seen.set(c,{def:x,from:[PROGRAM[k].name],close});
+      else{cur.from.push(PROGRAM[k].name);cur.close=cur.close||close;}
+    });
+  });
+  const list=[...seen.values()];
+  return {orig:e.subOf?slot:null, origDef:d, close:list.filter(x=>x.close), rest:list.filter(x=>!x.close)};
+}
+/* a swap is temporary and only this session's copy changes — PROGRAM is never
+   touched. The substitute brings its own reps and rest from its home workout;
+   set count stays. Anything typed for the old lift is cleared. */
+function applySwap(ei,def){
+  const e=S.exercises[ei], slot=e.subOf||e.name;
+  e.name=def[0]; e.repRange=def[2]; e.restSec=def[3]; e.targets=def[4];
+  if(canon(def[0])===canon(slot)) delete e.subOf; else e.subOf=slot;
+  e.sets=e.sets.map((_,i)=>({n:i+1,weight:null,reps:null,done:false,ts:null}));
+  save(); renderSession();
+}
+let swapCtx=null;
+function closeSwap(){ $('swapOv').classList.remove('on'); swapCtx=null; }
+function openSwap(ei){
+  const e=S.exercises[ei], o=swapOptions(e);
+  if(!o.origDef) return;
+  swapCtx={ei,o};
+  const meta=x=>x.from.join(' · ')+' · '+x.def[2]+' reps · '+(x.def[3]>=120?(x.def[3]/60)+' min':x.def[3]+'s')+' rest';
+  const row=(x,g,i)=>'<button class="swRow" data-g="'+g+'" data-i="'+i+'"><span class="nm">'+esc(x.def[0])+
+    '</span><span class="mt">'+esc(meta(x))+'</span></button>';
+  let h='';
+  if(o.orig) h+='<button class="swRow orig" data-r="1"><span class="nm">'+esc(o.orig)+'</span><span class="mt">Restore original</span></button>';
+  if(o.close.length) h+='<div class="swHd">Closest match</div>'+o.close.map((x,i)=>row(x,'c',i)).join('');
+  if(o.rest.length) h+='<div class="swHd">Other '+esc(o.origDef[4][0])+' exercises</div>'+o.rest.map((x,i)=>row(x,'r',i)).join('');
+  $('swapFor').textContent=e.subOf||e.name;
+  $('swapList').innerHTML=h;
+  $('swapOv').classList.add('on');
+}
+$('swapList').addEventListener('click',ev=>{
+  const r=ev.target.closest('.swRow'); if(!r||!swapCtx)return;
+  const {ei,o}=swapCtx;
+  const def = r.dataset.r ? o.origDef : ((r.dataset.g==='c'?o.close:o.rest)[+r.dataset.i]||{}).def;
+  closeSwap();
+  if(def) applySwap(ei,def);
+});
+$('swapCancel').onclick=closeSwap;
+$('swapOv').addEventListener('click',ev=>{ if(ev.target===$('swapOv')) closeSwap(); });
+
+/* notes belong to the exercise, not the workout or the session, so they live in
+   their own record and survive deleting any session */
+let noteKey=null;
+function openNote(name){
+  noteKey=canon(name);
+  $('noteFor').textContent=name;
+  $('noteTa').value=NOTES[noteKey]||'';
+  $('noteOv').classList.add('on');
+}
+$('noteCancel').onclick=()=>{ $('noteOv').classList.remove('on'); noteKey=null; };
+$('noteSave').onclick=async()=>{
+  const v=$('noteTa').value.trim();
+  if(v) NOTES[noteKey]=v; else delete NOTES[noteKey];
+  try{ await put('meta',NOTES,'exNotes'); }catch(e){ toast('Could not save the note'); }
+  $('noteOv').classList.remove('on'); noteKey=null;
+  if(S) renderSession();
+};
+
+/* press-and-hold for anything destructive — same idea as Finish */
+function armHold(el,ms,done){
+  let t=null;
+  const cancel=()=>{clearTimeout(t);t=null;el.classList.remove('arming');};
+  el.style.setProperty('--hold',ms+'ms');
+  el.addEventListener('pointerdown',ev=>{
+    ev.preventDefault(); el.classList.add('arming'); clearTimeout(t);
+    t=setTimeout(()=>{cancel();buzz(35);done();},ms);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(n=>el.addEventListener(n,cancel));
+  el.addEventListener('contextmenu',ev=>ev.preventDefault());
+}
 
 /* ---- rest timer: centred modal, driven by a timestamp so it survives a screen lock ---- */
 function showRest(){
@@ -1208,13 +1398,23 @@ $('histList').addEventListener('click',ev=>{
   const s=SESSIONS.find(x=>x.id===row.dataset.id); if(!s)return;
   renderDetail(s); show('scDetail');
 });
-let dtFrom='scHist';
-$('dtBack').onclick=()=>{
+let dtFrom='scHist', dtSess=null;
+function leaveDetail(){
   if(dtFrom==='scCal'){show('scCal');renderCal();} else {show('scHist');renderHist();}
-};
+}
+$('dtBack').onclick=leaveDetail;
+/* a stray demo set can raise the bar records are measured against, and the queue
+   reads from history — so this is a real delete, gated behind a deliberate hold */
+armHold($('dtDelete'),1500,async()=>{
+  if(!dtSess) return;
+  const id=dtSess.id; dtSess=null;
+  try{ await del('sessions',id); await load(); }catch(e){ toast('Could not delete that session'); return; }
+  leaveDetail(); toast('Session deleted');
+});
 
 /* ---- one completed session, every set as logged ---- */
 function renderDetail(s){
+  dtSess=s;
   const sets=s.exercises.reduce((a,e)=>a+e.sets.filter(x=>x.done).length,0);
   const exs =s.exercises.filter(e=>e.sets.some(x=>x.done)).length;
   const recs=recordsFor(s), recNames={};
@@ -1235,7 +1435,7 @@ function renderDetail(s){
     const pr=recNames[e.name];
     h+='<div class="dtEx'+(done.length?'':' sk')+'">'+
        '<h5>'+e.name+(pr?' <span style="color:var(--crimson);font-size:12px">· record</span>':'')+'</h5>'+
-       '<div class="tg">'+(e.targets?[...new Set(e.targets.map(normTarget))].join(' / '):'')+(e.repRange?' · '+e.repRange:'')+'</div>';
+       '<div class="tg">'+(e.targets?[...new Set(e.targets.map(normTarget))].join(' / '):'')+(e.repRange?' · '+e.repRange:'')+(e.subOf?' · in place of '+esc(e.subOf):'')+'</div>';
     if(done.length){
       const bestE=Math.max.apply(null,done.map(x=>e1rm(x.weight,x.reps)));
       h+='<div class="dtSets">'+done.map(x=>{
@@ -1367,7 +1567,7 @@ $('saveMeta').onclick=async()=>{
   await put('meta',META,'meta');renderHome();toast('Cycle saved');
 };
 $('doExport').onclick=async()=>{
-  const data={format:'sanctum-v2',exportedAt:new Date().toISOString(),meta:META,sessions:SESSIONS};
+  const data={format:'sanctum-v2',exportedAt:new Date().toISOString(),meta:META,sessions:SESSIONS,notes:NOTES};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
@@ -1385,14 +1585,18 @@ $('fileIn').onchange=async ev=>{
     let n=0;
     for(const s of incoming.sessions){if(seen.has(s.id))continue;await put('sessions',s);n++;}
     if(incoming.meta){META=Object.assign(META,incoming.meta);await put('meta',META,'meta');}
+    /* notes already on this phone win; a backup only fills the gaps */
+    let nn=0;
+    for(const [k,v] of Object.entries(incoming.notes||{})){ if(v&&!NOTES[k]){NOTES[k]=v;nn++;} }
+    if(nn) await put('meta',NOTES,'exNotes');
     await load();renderHome();renderSet();
-    toast(n+' session'+(n===1?'':'s')+' imported');
+    toast(n+' session'+(n===1?'':'s')+' imported'+(nn?' · '+nn+' note'+(nn===1?'':'s'):''));
   }catch(e){toast('Could not read that file');}
   ev.target.value='';
 };
 /* accepts both the old app format and this one */
 function normalise(raw){
-  if(raw.format==='sanctum-v2')return{meta:raw.meta,sessions:raw.sessions||[]};
+  if(raw.format==='sanctum-v2')return{meta:raw.meta,sessions:raw.sessions||[],notes:raw.notes||{}};
   if(Array.isArray(raw.workoutLogs)){
     const meta={currentCycle:raw.currentCycle||1,cycleStartDate:raw.cycleStartDate||today()};
     const sessions=raw.workoutLogs.map(w=>{
@@ -1413,11 +1617,12 @@ function normalise(raw){
   throw new Error('unknown');
 }
 $('wipe').onclick=async()=>{
-  if(!confirm('Erase every session and reset the cycle? This cannot be undone.'))return;
+  if(!confirm('Erase every session and exercise note, and reset the cycle? This cannot be undone.'))return;
   if(!confirm('Really erase everything?'))return;
   const st=DB.h.transaction('sessions','readwrite').objectStore('sessions');st.clear();
   META={version:3,currentCycle:1,cycleStartDate:today()};
   await put('meta',META,'meta');
+  NOTES={}; await put('meta',NOTES,'exNotes');
   setTimeout(async()=>{await load();renderHome();renderSet();toast('Erased');},200);
 };
 
@@ -1439,6 +1644,7 @@ $('setBack').onclick=()=>{show('scHome');renderHome()};
 async function load(){
   const m=await get('meta','meta');
   if(m)META=Object.assign(META,m); else await put('meta',META,'meta');
+  NOTES=(await get('meta','exNotes'))||{};
   const list=await all('sessions');
   SESSIONS=list.filter(s=>s.status!=='active').sort((a,b)=>(a.date+a.id).localeCompare(b.date+b.id));
   const active=list.find(s=>s.status==='active');

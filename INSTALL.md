@@ -91,14 +91,50 @@ A **record** means you beat your own previous best on that exercise, measured by
 time an exercise is logged counts too, which is how Hevy behaves — expect inflated numbers
 for the first fortnight until you have history to beat.
 
+## Swap, notes, delete
+
+**Swap** — a button on every exercise during a session, for when a machine is taken. It
+offers the same-muscle exercises from your *other two* workouts of the same kind (a back
+exercise in Upper A offers the back exercises from Upper B and C; Lower works the same
+way). The like-for-like slot comes first under *Closest match*, the rest under *Other …
+exercises*. A swap is for that session only: your program is never changed, the swapped
+exercise shows *In place of …*, and History records what you actually did and what it
+replaced. The substitute counts toward the same muscle in Volume, brings its own reps and
+rest from its home workout, and keeps its own last-time reference and records.
+Swap disappears once you've logged a set on that exercise — untick the set to bring it
+back — and *Restore original* is always the first option on a swapped exercise. Adductors,
+calf raises and cable crunches have no Swap because all three lower days use the same one.
+
+**Notes** — a *Note* button on every exercise. A note belongs to the exercise, not the
+workout: write "seat 4, pad on 3rd hole" once and it shows under that exercise every time
+it appears, in any workout. Tap the note to edit it; empty it to remove it. Notes are
+stored separately from sessions, so deleting a session never touches them, and they are
+included in **Export backup** and restored by **Import backup** (a note already on the
+phone is never overwritten by a backup). The session-wide note on the summary screen is
+separate and unchanged.
+
+**Delete session** — open any session from History or Calendar and press-and-hold
+**Hold to delete** for 1.5 seconds. A tap, an early release, or sliding your thumb off
+cancels it. Deleting removes the session from Volume, from the baseline records are
+measured against (a stray heavy set can no longer raise the bar), and from the queue —
+if it was the most recent upper or lower, the queue steps back one, so an accidental
+session doesn't advance your rotation. It can't be undone, so export a backup first if
+you're unsure.
+
 ## What changed from the old app
 
-- Routine is six workouts — Upper A/B/C and Lower A/B/C — and each Upper session also
-  rotates which body part leads: chest, back, or shoulders. Both axes move every single
-  upper session — you never repeat the same exercise set twice running, and the lead
-  never holds still either. All nine combinations (A-chest, B-back, C-shoulders, A-back,
-  B-shoulders, C-chest, A-shoulders, B-chest, C-back) show up once each before the cycle
-  repeats. Arms always close the session; only chest, back and shoulders reorder.
+- Routine is six workouts — Upper A/B/C and Lower A/B/C. Upper sessions reorder three
+  body-part blocks (chest, back, shoulders); Arms always close. Each set owns a lead:
+  **Upper A opens with chest, Upper B with back, Upper C with shoulders.** Sets go
+  A → B → C every upper session, so the lead rotates evenly — any three uppers in a row
+  have three different leads, and a week of two uppers never repeats one.
+- What varies is the order of the other two blocks. It flips direction every lap (each
+  time Upper A comes round again): one lap goes chest → back → shoulders style, the next
+  reverses it. That gives six distinct upper sessions — every ordering of the three
+  blocks — repeating every six uppers. The queue shows the full order, e.g.
+  *Upper A · Chest → Shoulders → Back*.
+- The app doesn't need to know about two-upper and three-upper weeks. The queue simply
+  runs on across them.
 - Five sessions a week, alternating upper and lower, same as before. Everything is derived
   from your actual session history, so overriding the suggestion (jumping to any workout in
   the queue) doesn't need a reset — the next suggestion just branches from whatever you
@@ -172,3 +208,7 @@ for the first fortnight until you have history to beat.
 - Finishing a session needs a deliberate 1.1 second press on **Hold to finish**, with a
   fill that runs across the button as you hold. Releasing early, or sliding your thumb off
   the button, cancels it. A stray tap can no longer end a workout.
+
+- Older sessions that recorded a lead as a number rather than a full order still read
+  correctly, and a workout that was mid-session when the app updated resumes with its
+  original exercise order.
