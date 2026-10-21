@@ -86,10 +86,10 @@ glyph, so the type survives a white gym wall while the middle of the photo stays
 Measured against a deliberately blown-out test image it holds 3.2:1 on the wordmark and
 4.3:1 on the stats in both formats.
 
-A **record** means you beat your own previous best on that exercise, measured by estimated
-1RM (Epley), so an extra rep counts as progress the same way extra weight does. The first
-time an exercise is logged counts too, which is how Hevy behaves — expect inflated numbers
-for the first fortnight until you have history to beat.
+A **record** means your best single set on that exercise, by weight × reps — see
+*Best set, not estimated 1RM* below for the full rule. The first time an exercise is
+logged counts too, which is how Hevy behaves — expect inflated numbers for the first
+fortnight until you have history to beat.
 
 ## Swap, notes, delete
 
@@ -120,6 +120,59 @@ measured against (a stray heavy set can no longer raise the bar), and from the q
 if it was the most recent upper or lower, the queue steps back one, so an accidental
 session doesn't advance your rotation. It can't be undone, so export a backup first if
 you're unsure.
+
+## Custom workouts and cardio
+
+**Custom workout** — a button on the home screen, next to *Log cardio*. Choose Upper or
+Lower, and it drops you straight into a session with no exercises in it. From there,
+**+ Add exercise** works exactly like it does mid-session below: pick a muscle group, pick
+an exercise, set sets/reps/rest, repeat. A custom workout is invisible to the Upper/Lower
+queue — it never advances or interrupts the A/B/C rotation — but it counts fully toward
+Volume, History and Calendar, because the sets you log are real.
+
+**Add exercise** — the same picker, now also available at the bottom of *every* session,
+prescribed or custom. Choose a muscle group, choose an exercise from that muscle's list
+(your program's own exercises across all three variants, plus the exercise catalog below),
+then confirm or adjust the sets/reps/rest before it's added. An exercise added this way
+isn't swappable — Swap only applies to the program's own prescribed slots — but everything
+else about it (logging, notes, last-time, best-set) works the same as any other exercise.
+
+**Log cardio** — pick an activity (Walking, Martial arts / boxing, Cycling, Swimming, Yoga,
+or Other with your own name) and enter the minutes spent. It saves straight away — no
+session screen, no sets. A cardio entry shows up in History and on the Calendar like any
+other day, but it's left out of Volume entirely (no muscle, no sets, no tonnage — that tab
+is specifically about lifting).
+
+## Best set, not estimated 1RM
+
+A **record** now means the best single *set* you've ever logged for that exercise, ranked
+by weight × reps: 12 kg × 12 beats 12 kg × 11, and either beats 10 kg × 20, full stop — no
+Epley estimate folding weight and reps together behind the scenes. This shows up three
+places: the live crimson highlight while you're training, the record list on the session
+summary and share card (now shown as the actual weight × reps, not "+X est. 1RM"), and the
+crimson-outlined set in History detail.
+
+Every exercise during a session now shows two reference lines — **Last**, the most recent
+time you logged it, and **Best**, the highest-volume set you've ever logged for it — both
+searched across every workout it appears in, not just the one you're doing today. Do
+Machine Chest Press as a swap in Upper B today, then again as a swap in Upper A next month,
+and Best still reflects the true all-time number either way.
+
+## Exercise catalog and renames
+
+Twelve new exercises are in the database for Add exercise and Swap, filed under their
+muscle (not added to any day's prescribed routine): **Glutes** — DB Walking Lunges, Single
+Leg Step Ups, Reverse V Squat, Single Leg 45° Hyperextensions, Pit Shark RDL, B-Stance Hip
+Thrust, Plate Loaded Abductor Machine, Machine Glute Kickback; **Back** — Plate Loaded Lat
+Pulldown, Plate Loaded Pronated Chest Supported Row, Plate Loaded Neutral Chest Supported
+Row. They show up as Swap options too, always under *Other … exercises* since they have no
+natural "closest slot" in your routine.
+
+Barbell Hip Thrust is now **Machine Hip Thrust**, and the three separate Abductor Machine
+variants (Upright / Lean Forward / Lean Back) are now one **Abductor Machine** — all your
+history, notes and records carry over under the new names. In Lower C, FFE Barbell Reverse
+Lunge is now **FFE DB Reverse Lunge**; this one is tracked as a distinct exercise rather
+than merged with the old barbell version, since the load isn't comparable.
 
 ## What changed from the old app
 
@@ -175,10 +228,10 @@ glyph, so the type survives a white gym wall while the middle of the photo stays
 Measured against a deliberately blown-out test image it holds 3.2:1 on the wordmark and
 4.3:1 on the stats in both formats.
 
-A **record** means you beat your own previous best on that exercise, measured by estimated
-1RM (Epley), so an extra rep counts as progress the same way extra weight does. The first
-time an exercise is logged counts too, which is how Hevy behaves — expect inflated numbers
-for the first fortnight until you have history to beat.
+A **record** means your best single set on that exercise, by weight × reps — see
+*Best set, not estimated 1RM* above for the full rule. The first time an exercise is
+logged counts too, which is how Hevy behaves — expect inflated numbers for the first
+fortnight until you have history to beat.
 
 ## What changed from the old app
 

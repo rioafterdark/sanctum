@@ -107,7 +107,8 @@ header{padding:14px 18px 12px;border-bottom:1px solid var(--edge);
 .last{margin:9px 0 0 26px;font-family:var(--mono);font-size:11.5px;color:var(--ash)}
 .last b{color:var(--ossa);font-weight:400}
 .last .none{color:var(--dim)}
-.last .oth{color:var(--dim);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+.last.best{margin-top:3px}
+.last.best b{color:var(--crimson)}
 
 .sets{margin:13px 0 0 26px;display:flex;flex-direction:column;gap:8px}
 .set{display:flex;align-items:center;gap:9px}
@@ -510,6 +511,47 @@ textarea,input{-webkit-user-select:text;user-select:text}
   </div>
 </div>
 
+<div id="customOv" class="ovl bot" role="dialog" aria-label="Custom workout">
+  <div class="sheet">
+    <div class="lbl">Custom workout</div>
+    <div class="ttl">Upper or lower body?</div>
+    <div id="customList">
+      <button class="swRow" data-t="U"><span class="nm">Upper</span></button>
+      <button class="swRow" data-t="L"><span class="nm">Lower</span></button>
+    </div>
+    <div class="btns" style="margin-top:18px"><button class="btn" id="customCancel">Cancel</button></div>
+  </div>
+</div>
+
+<div id="pickOv" class="ovl bot" role="dialog" aria-label="Add exercise">
+  <div class="sheet">
+    <div class="lbl">Add exercise</div>
+    <div class="ttl" id="pickTtl">—</div>
+    <div id="pickList"></div>
+    <div class="btns" style="margin-top:18px"><button class="btn" id="pickCancel">Cancel</button></div>
+  </div>
+</div>
+
+<div id="cardioOv" class="ovl bot" role="dialog" aria-label="Log cardio">
+  <div class="sheet">
+    <div class="lbl">Cardio</div>
+    <div class="ttl">Log a cardio session</div>
+    <div id="cardioList"></div>
+    <div class="field" id="cardioOtherWrap" style="display:none;margin-top:16px">
+      <label class="lbl">Activity name</label>
+      <input type="text" id="cardioOther" placeholder="e.g. Rowing">
+    </div>
+    <div class="field" style="margin-top:16px">
+      <label class="lbl">Minutes</label>
+      <input type="number" id="cardioMin" inputmode="numeric" min="1" placeholder="e.g. 45">
+    </div>
+    <div class="btns" style="margin-top:6px">
+      <button class="btn" id="cardioCancel">Cancel</button>
+      <button class="btn pri" id="cardioSave">Save</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -545,32 +587,53 @@ const PROGRAM = {
     Arms:[['Dumbbell Hammer Curl',2,'10-15',120,['Biceps']],
           ['DB Skull Crushers',2,'10-15',120,['Triceps']]]}},
   LA:{name:'Lower A', type:'L', ex:[
-    ['Barbell Hip Thrust',2,'6-10',180,['Glutes']],
+    ['Machine Hip Thrust',2,'6-10',180,['Glutes']],
     ['DB Bulgarian Split Squat',2,'6-10',180,['Glutes']],
     ['Barbell Romanian Deadlift',2,'6-10',180,['Glutes']],
-    ['Abductor Machine · Upright',2,'12-15',120,['Glutes']],
+    ['Abductor Machine',2,'12-15',120,['Glutes']],
     ['Leg Extension',2,'12-15',120,['Quads']],
     ['Machine Hip Adduction',2,'12-15',120,['Adductors']],
     ['Seated Calf Raise',2,'12-15',120,['Calves']],
     ['Cable Crunch',2,'12-15',120,['Abs']]]},
   LB:{name:'Lower B', type:'L', ex:[
-    ['Barbell Hip Thrust',2,'6-10',180,['Glutes']],
+    ['Machine Hip Thrust',2,'6-10',180,['Glutes']],
     ['Belt Squat',2,'6-10',180,['Glutes']],
     ['45° Hyperextension',2,'6-10',180,['Glutes']],
-    ['Abductor Machine · Lean Forward',2,'12-15',120,['Glutes']],
+    ['Abductor Machine',2,'12-15',120,['Glutes']],
     ['Single-Leg Leg Extension',2,'12-15',120,['Quads']],
     ['Machine Hip Adduction',2,'12-15',120,['Adductors']],
     ['Seated Calf Raise',2,'12-15',120,['Calves']],
     ['Cable Crunch',2,'12-15',120,['Abs']]]},
   LC:{name:'Lower C', type:'L', ex:[
-    ['Barbell Hip Thrust',2,'6-10',180,['Glutes']],
-    ['FFE Barbell Reverse Lunge',2,'6-10',180,['Glutes']],
+    ['Machine Hip Thrust',2,'6-10',180,['Glutes']],
+    ['FFE DB Reverse Lunge',2,'6-10',180,['Glutes']],
     ['B-Stance Romanian Deadlift',2,'6-10',180,['Glutes']],
-    ['Abductor Machine · Lean Back',2,'12-15',120,['Glutes']],
+    ['Abductor Machine',2,'12-15',120,['Glutes']],
     ['Machine Leg Extension · Rest Pause',2,'12-15',120,['Quads']],
     ['Machine Hip Adduction',2,'12-15',120,['Adductors']],
     ['Seated Calf Raise',2,'12-15',120,['Calves']],
     ['Cable Crunch',2,'12-15',120,['Abs']]]}
+};
+
+/* catalog-only exercises: offered by Swap (same-muscle, same-type pool) and by
+   the muscle-group picker for custom workouts and in-session "Add exercise" —
+   never part of a day's own prescribed routine, so PROGRAM above is untouched */
+const CATALOG = {
+  U:[
+    ['Plate Loaded Lat Pulldown',2,'6-10',180,['Back']],
+    ['Plate Loaded Pronated Chest Supported Row',2,'6-10',180,['Back']],
+    ['Plate Loaded Neutral Chest Supported Row',2,'6-10',180,['Back']]
+  ],
+  L:[
+    ['DB Walking Lunges',2,'6-10',180,['Glutes']],
+    ['Single Leg Step Ups',2,'6-10',180,['Glutes']],
+    ['Reverse V Squat',2,'6-10',180,['Glutes']],
+    ['Single Leg 45° Hyperextensions',2,'6-10',180,['Glutes']],
+    ['Pit Shark RDL',2,'6-10',180,['Glutes']],
+    ['B-Stance Hip Thrust',2,'6-10',180,['Glutes']],
+    ['Plate Loaded Abductor Machine',2,'12-15',120,['Glutes']],
+    ['Machine Glute Kickback',2,'12-15',120,['Glutes']]
+  ]
 };
 
 /* Upper sessions reorder three body-part blocks — chest, back, shoulders — with
@@ -601,8 +664,14 @@ function sessionExerciseDefs(key,order){
   return p.type==='U' ? upperExercises(key,order) : p.ex;
 }
 
-/* one lift was renamed — keep its history attached to the new name */
-const ALIAS={'Chest Supported Rows · Neutral Grip':'Neutral Grip Chest Supported Row'};
+/* lifts that were renamed — keep their history attached to the new name */
+const ALIAS={
+  'Chest Supported Rows · Neutral Grip':'Neutral Grip Chest Supported Row',
+  'Barbell Hip Thrust':'Machine Hip Thrust',
+  'Abductor Machine · Upright':'Abductor Machine',
+  'Abductor Machine · Lean Forward':'Abductor Machine',
+  'Abductor Machine · Lean Back':'Abductor Machine'
+};
 const canon=n=>ALIAS[n]||n;
 /* muscle names retired from TRACKED — old sessions still carry them in their
    stored snapshot, so fold them into their new home wherever a target is read
@@ -692,25 +761,47 @@ function setsByTarget(from){
   });
   return map;
 }
-/* Hip thrust now runs on all three days at three rep ranges, so the most recent
-   log is often the wrong comparison. Prefer the same day slot; fall back to any. */
-function lastFor(exName,excludeId,dayKey){
-  const scan=(needDay)=>{
-    for(let i=SESSIONS.length-1;i>=0;i--){
-      const s=SESSIONS[i];
-      if(s.id===excludeId||s.status!=='completed')continue;
-      if(needDay&&s.dayKey!==dayKey)continue;
-      const e=s.exercises.find(x=>canon(x.name)===canon(exName));
-      if(!e)continue;
-      const done=e.sets.filter(x=>x.done);
-      if(done.length)return{date:s.date,sets:done,sameDay:needDay};
-    }
-    return null;
-  };
-  return (dayKey&&scan(true))||scan(false);
+/* Every instance of an exercise now shares the same reps/rest regardless of
+   which day it's logged under (confirmed across the real export), so "last
+   time" is simply the most recent log of that name, anywhere. */
+function lastFor(exName,excludeId){
+  for(let i=SESSIONS.length-1;i>=0;i--){
+    const s=SESSIONS[i];
+    if(s.id===excludeId||s.status!=='completed')continue;
+    const e=s.exercises.find(x=>canon(x.name)===canon(exName));
+    if(!e)continue;
+    const done=e.sets.filter(x=>x.done);
+    if(done.length)return{date:s.date,sets:done};
+  }
+  return null;
 }
 function best(setsArr){
   return setsArr.reduce((m,x)=>Math.max(m,(x.weight||0)*(x.reps||0)),0);
+}
+/* the single highest weight×reps ("volume") set in a list — this is the app's
+   one definition of "best set", used for the live PR highlight, the records
+   shown on the done screen and share card, and the all-time best-set line */
+function bestSet(setsArr){
+  let out=null;
+  setsArr.forEach(x=>{
+    const v=(x.weight||0)*(x.reps||0);
+    if(v>0&&(!out||v>out.vol))out={weight:x.weight,reps:x.reps,vol:v};
+  });
+  return out;
+}
+/* the best set ever logged for an exercise, searched across every workout it
+   has appeared in — regardless of which day (Upper A/B/C, Lower A/B/C) it
+   was logged under */
+function allTimeBest(exName,excludeId){
+  let out=null;
+  SESSIONS.forEach(s=>{
+    if(s.id===excludeId||s.status!=='completed')return;
+    const e=s.exercises.find(x=>canon(x.name)===canon(exName));
+    if(!e)return;
+    const b=bestSet(e.sets.filter(x=>x.done));
+    if(b&&(!out||b.vol>out.vol))out=b;
+  });
+  return out;
 }
 
 /* ============ HOME ============ */
@@ -806,7 +897,18 @@ function renderHome(){
     list.appendChild(row);
   });
   d.appendChild(list);
+
+  const extra=document.createElement('div');
+  extra.style.cssText='display:flex;gap:8px;margin-top:20px';
+  extra.innerHTML='<button class="btn" id="toCustom">Custom workout</button>'+
+    '<button class="btn" id="toCardio">Log cardio</button>';
+  d.appendChild(extra);
 }
+/* delegated — the buttons above are recreated on every renderHome() */
+$('days').addEventListener('click',ev=>{
+  if(ev.target.closest('#toCustom')){openCustomStart();return;}
+  if(ev.target.closest('#toCardio')){openCardio();return;}
+});
 
 /* ============ SESSION ============ */
 function startSession(key,order){
@@ -835,14 +937,152 @@ function startSession(key,order){
   requestWake();
 }
 
+/* ---- custom workout: starts an empty session invisible to the U/L queue,
+   built up one exercise at a time with the same "Add exercise" picker a
+   prescribed session uses mid-workout ---- */
+function openCustomStart(){ $('customOv').classList.add('on'); }
+$('customList').addEventListener('click',ev=>{
+  const r=ev.target.closest('[data-t]'); if(!r)return;
+  $('customOv').classList.remove('on');
+  startCustom(r.dataset.t);
+});
+$('customCancel').onclick=()=>$('customOv').classList.remove('on');
+function startCustom(type){
+  S={
+    id:String(Date.now()),
+    date:today(),
+    startedAt:Date.now(), endedAt:null,
+    cycle:META.currentCycle,
+    dayKey:'CUSTOM', dayName:'Custom '+(type==='U'?'Upper':'Lower'), order:null,
+    custom:true, customType:type,
+    status:'active',
+    exercises:[],
+    totalVolume:0, duration:0, notes:''
+  };
+  show('scSess');
+  renderSession();
+  clearInterval(tick);
+  tick=setInterval(()=>{
+    $('sessClock').textContent=fmt(Math.floor((Date.now()-S.startedAt)/1000));
+  },1000);
+  requestWake();
+}
+
+/* ---- muscle → exercise → sets/reps/rest picker, shared by custom workouts
+   (building the whole session) and "Add exercise" mid-session ---- */
+let PICK=null;
+function openPicker(type,onAdd){
+  PICK={type,step:'muscle',muscle:null,def:null,onAdd};
+  renderPicker();
+  $('pickOv').classList.add('on');
+}
+function closePicker(){ $('pickOv').classList.remove('on'); PICK=null; }
+function renderPicker(){
+  let h='';
+  if(PICK.step==='muscle'){
+    $('pickTtl').textContent='Choose a muscle group';
+    h=musclesFor(PICK.type).map(m=>
+      '<button class="swRow" data-m="'+esc(m)+'"><span class="nm">'+esc(m)+'</span></button>').join('');
+  } else if(PICK.step==='exercise'){
+    $('pickTtl').textContent=PICK.muscle;
+    const list=exercisesFor(PICK.type,PICK.muscle);
+    h='<button class="swRow orig" data-back="1"><span class="nm">‹ Back</span></button>'+
+      (list.length ? list.map((d,i)=>
+        '<button class="swRow" data-i="'+i+'"><span class="nm">'+esc(d[0])+'</span>'+
+        '<span class="mt">'+esc(d[2])+' reps · '+(d[3]>=120?(d[3]/60)+' min':d[3]+'s')+' rest</span></button>').join('')
+      : '<div class="swEmpty">No catalog exercises for this muscle yet.</div>');
+  } else if(PICK.step==='config'){
+    const d=PICK.def;
+    $('pickTtl').textContent=d[0];
+    h='<div class="field"><label class="lbl">Sets</label><input type="number" id="pkSets" inputmode="numeric" value="'+d[1]+'" min="1" max="8"></div>'+
+      '<div class="field"><label class="lbl">Rep range</label><input type="text" id="pkReps" value="'+esc(d[2])+'"></div>'+
+      '<div class="field"><label class="lbl">Rest (seconds)</label><input type="number" id="pkRest" inputmode="numeric" value="'+d[3]+'" min="0" step="15"></div>'+
+      '<div class="btns" style="margin-top:6px"><button class="btn" id="pkBack2">Back</button><button class="btn pri" id="pkAdd">Add exercise</button></div>';
+  }
+  $('pickList').innerHTML=h;
+}
+$('pickList').addEventListener('click',ev=>{
+  if(!PICK)return;
+  if(ev.target.closest('[data-back]')){ PICK.step='muscle'; renderPicker(); return; }
+  const mBtn=ev.target.closest('[data-m]');
+  if(mBtn){ PICK.muscle=mBtn.dataset.m; PICK.step='exercise'; renderPicker(); return; }
+  if(ev.target.closest('#pkBack2')){ PICK.step='exercise'; renderPicker(); return; }
+  if(ev.target.closest('#pkAdd')){
+    const sets=Math.max(1,parseInt($('pkSets').value)||1);
+    const reps=$('pkReps').value.trim()||PICK.def[2];
+    const rest=Math.max(0,parseInt($('pkRest').value)||0);
+    const onAdd=PICK.onAdd, def=[PICK.def[0],sets,reps,rest,PICK.def[4]];
+    closePicker();
+    onAdd(def);
+    return;
+  }
+  const row=ev.target.closest('.swRow[data-i]');
+  if(row){ PICK.def=exercisesFor(PICK.type,PICK.muscle)[+row.dataset.i]; PICK.step='config'; renderPicker(); }
+});
+$('pickCancel').onclick=closePicker;
+$('pickOv').addEventListener('click',ev=>{ if(ev.target===$('pickOv')) closePicker(); });
+
+/* ---- cardio: a day with no strength sets at all — visible in History and
+   Calendar only, invisible to Volume (no targets/exercises to tally) and to
+   the U/L queue (no PROGRAM entry for its dayKey) ---- */
+const CARDIO_TYPES=['Walking','Martial arts / boxing','Cycling','Swimming','Yoga','Other'];
+let cardioSel=null;
+function openCardio(){
+  cardioSel='Walking';
+  paintCardioList();
+  $('cardioOtherWrap').style.display='none';
+  $('cardioOther').value='';
+  $('cardioMin').value='';
+  $('cardioOv').classList.add('on');
+}
+function paintCardioList(){
+  $('cardioList').innerHTML=CARDIO_TYPES.map(t=>
+    '<button class="swRow'+(t===cardioSel?' orig':'')+'" data-t="'+esc(t)+'"><span class="nm">'+esc(t)+'</span></button>').join('');
+}
+function closeCardio(){ $('cardioOv').classList.remove('on'); }
+$('cardioList').addEventListener('click',ev=>{
+  const r=ev.target.closest('[data-t]'); if(!r)return;
+  cardioSel=r.dataset.t;
+  paintCardioList();
+  $('cardioOtherWrap').style.display = cardioSel==='Other' ? 'block' : 'none';
+});
+$('cardioCancel').onclick=closeCardio;
+$('cardioOv').addEventListener('click',ev=>{ if(ev.target===$('cardioOv')) closeCardio(); });
+$('cardioSave').onclick=async()=>{
+  const mins=Math.max(0,parseInt($('cardioMin').value)||0);
+  if(!mins){toast('Enter minutes');return;}
+  let label=cardioSel;
+  if(label==='Other'){
+    const t=$('cardioOther').value.trim();
+    if(!t){toast('Name the activity');return;}
+    label=t;
+  }
+  const obj={
+    id:String(Date.now()), date:today(), startedAt:Date.now()-mins*60000, endedAt:Date.now(),
+    cycle:META.currentCycle, dayKey:'CARDIO', dayName:label,
+    status:'completed', exercises:[], totalVolume:0, duration:mins*60, notes:'',
+    cardio:{activity:label,minutes:mins}
+  };
+  try{ await put('sessions',obj); await load(); }catch(e){ toast('Could not save'); return; }
+  closeCardio(); renderHome(); toast('Cardio logged');
+};
+
+/* the type (Upper/Lower) behind the current session's muscle picker — a
+   prescribed day reads it off PROGRAM, a custom workout carries its own */
+function sessionType(){
+  const p=PROGRAM[S.dayKey];
+  return p ? p.type : (S.customType||'U');
+}
 function renderSession(){
-  const so=PROGRAM[S.dayKey].type==='U'?sessOrder(S):null;
+  const dayProg=PROGRAM[S.dayKey];
+  const so=(dayProg&&dayProg.type==='U')?sessOrder(S):null;
   $('sessName').textContent=S.dayName+(so?' · '+so[0]+' lead':'');
   const list=$('exList');
   const keep=list.scrollTop;          // logging a set rebuilds the list — don't lose their place
   list.innerHTML='';
   S.exercises.forEach((e,ei)=>{
-    const prev=lastFor(e.name,S.id,S.dayKey);
+    const prev=lastFor(e.name,S.id);
+    const pbest=allTimeBest(e.name,S.id);
     const div=document.createElement('div');
     const allDone=e.sets.every(s=>s.done);
     div.className='ex'+(e.skipped?' skip':allDone?' done':'');
@@ -850,9 +1090,14 @@ function renderSession(){
     let lastHtml;
     if(e.skipped){lastHtml='<div class="last none">Skipped</div>';}
     else if(prev){
-      lastHtml='<div class="last">Last · '+prev.date.slice(5)+(prev.sameDay?'':' <span class="oth">other day</span>')+' &nbsp; '+
+      lastHtml='<div class="last">Last · '+prev.date.slice(5)+' &nbsp; '+
         prev.sets.map(s=>'<b>'+s.weight+'</b>×'+s.reps).join(' &nbsp; ')+'</div>';
     } else {lastHtml='<div class="last none">No previous record</div>';}
+    if(!e.skipped){
+      lastHtml += pbest
+        ? '<div class="last best">Best · <b>'+pbest.weight+'</b>×'+pbest.reps+'</div>'
+        : '<div class="last none">No record yet</div>';
+    }
 
     const nt=NOTES[canon(e.name)];
     const anyDone=e.sets.some(s=>s.done);
@@ -865,7 +1110,7 @@ function renderSession(){
       lastHtml+
       (nt?'<div class="exnote" data-act="note" data-e="'+ei+'">'+esc(nt)+'</div>':'')+
       (e.skipped?'':'<div class="sets">'+e.sets.map((s,si)=>{
-        const pb=prev&&(s.weight*s.reps)>best(prev.sets)&&s.done;
+        const pb=pbest&&s.done&&(s.weight*s.reps)>pbest.vol;
         return '<div class="set'+(s.done?' ok':'')+(pb?' pr':'')+'" data-e="'+ei+'" data-s="'+si+'">'+
           '<span class="sn">'+s.n+'</span>'+
           '<span class="fld"><input type="number" inputmode="decimal" step="0.5" placeholder="—" value="'+(s.weight??'')+'" data-f="weight"><u>kg</u></span>'+
@@ -880,6 +1125,17 @@ function renderSession(){
       '</div>';
     list.appendChild(div);
   });
+  const addRow=document.createElement('button');
+  addRow.className='btn'; addRow.id='addExBtn';
+  addRow.style.cssText='width:calc(100% - 36px);margin:16px 18px 10px';
+  addRow.textContent='+ Add exercise';
+  addRow.onclick=()=>openPicker(sessionType(),def=>{
+    S.exercises.push({name:def[0],prescribed:def[1],repRange:def[2],restSec:def[3],targets:def[4],
+      skipped:false,notes:'',custom:true,
+      sets:Array.from({length:def[1]},(_,i)=>({n:i+1,weight:null,reps:null,done:false,ts:null}))});
+    save();renderSession();
+  });
+  list.appendChild(addRow);
   list.scrollTop=keep;
   updateProg();
 }
@@ -924,10 +1180,27 @@ $('exList').addEventListener('click',ev=>{
 /* ============ SWAP + NOTES ============ */
 function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
-/* a workout's exercises in a fixed canonical order (upper blocks are stored by muscle) */
+/* a workout's exercises in a fixed canonical order (upper blocks are stored by
+   muscle); a custom workout's dayKey has no PROGRAM entry at all */
 function allDefs(key){
   const p=PROGRAM[key];
+  if(!p) return [];
   return p.type==='U' ? ['Chest','Back','Shoulders','Arms'].flatMap(m=>p.blocks[m]) : p.ex;
+}
+/* every exercise known for a workout type (Upper/Lower) and muscle: the
+   program's own exercises across all three variants, plus the catalog-only
+   pool — the source list for custom workouts and in-session "Add exercise" */
+function exercisesFor(type,muscle){
+  const seen=new Map();
+  ORDER.filter(k=>PROGRAM[k].type===type).forEach(k=>{
+    allDefs(k).forEach(x=>{ if(x[4][0]===muscle) seen.set(canon(x[0]),x); });
+  });
+  (CATALOG[type]||[]).forEach(x=>{ if(x[4][0]===muscle) seen.set(canon(x[0]),x); });
+  return [...seen.values()].sort((a,b)=>a[0].localeCompare(b[0]));
+}
+function musclesFor(type){
+  return type==='U' ? ['Chest','Back','Shoulders','Biceps','Triceps']
+                     : ['Glutes','Quads','Adductors','Calves','Abs'];
 }
 /* position of an exercise among the same-muscle exercises of its own workout —
    lets a swap offer the like-for-like slot in the other workouts first */
@@ -939,6 +1212,7 @@ function tagPos(key,name){
    workouts of the same kind (Upper→other uppers, Lower→other lowers) */
 function swapOptions(e){
   const none={orig:null,origDef:null,close:[],rest:[]};
+  if(!PROGRAM[S.dayKey]) return none;     // a custom workout has nothing to swap from
   const slot=e.subOf||e.name;
   const d=allDefs(S.dayKey).find(x=>canon(x[0])===canon(slot));
   if(!d) return none;
@@ -954,6 +1228,13 @@ function swapOptions(e){
       if(!cur) seen.set(c,{def:x,from:[PROGRAM[k].name],close});
       else{cur.from.push(PROGRAM[k].name);cur.close=cur.close||close;}
     });
+  });
+  /* catalog-only exercises have no home day, so no "closest slot" — they
+     always land under "Other … exercises" */
+  (CATALOG[type]||[]).forEach(x=>{
+    if(x[4][0]!==tag) return;
+    const c=canon(x[0]); if(used.has(c)||seen.has(c)) return;
+    seen.set(c,{def:x,from:['Exercise catalog'],close:false});
   });
   const list=[...seen.values()];
   return {orig:e.subOf?slot:null, origDef:d, close:list.filter(x=>x.close), rest:list.filter(x=>!x.close)};
@@ -1112,9 +1393,9 @@ function releaseWake(){try{wake&&wake.release();wake=null}catch(e){}}
 async function save(){if(S){await put('sessions',S);}updateProg();}
 
 /* ============ RECORDS ============ */
-/* Epley estimate: folds weight and reps into one number, so +1 rep counts as
-   progress the same way +2.5 kg does. Both are how you advance at 0-1 RIR. */
-function e1rm(w,r){return w*(1+r/30);}
+/* A record is the best SET, not an estimated 1RM: 12kg×12 beats 12kg×11, and
+   weight×reps ("volume") is the one ranking used everywhere — here, the live
+   highlight while training, and the all-time best-set line under an exercise. */
 function dur(sec){
   const h=Math.floor(sec/3600), m=Math.round((sec%3600)/60);
   return h ? h+'h '+m+'min' : m+'min';
@@ -1124,22 +1405,17 @@ function recordsFor(sess){
   sess.exercises.forEach(e=>{
     const done=e.sets.filter(s=>s.done&&s.weight>0&&s.reps>0);
     if(!done.length)return;
-    let pBest=0,pW=0,seen=false;
+    let pBest=null;
     SESSIONS.forEach(s=>{
       if(s.id===sess.id||s.status!=='completed'||s.date>sess.date)return;
       const pe=s.exercises.find(x=>canon(x.name)===canon(e.name));
       if(!pe)return;
-      pe.sets.filter(x=>x.done&&x.weight>0&&x.reps>0).forEach(x=>{
-        seen=true;
-        pBest=Math.max(pBest,e1rm(x.weight,x.reps));
-        pW=Math.max(pW,x.weight);
-      });
+      const pb=bestSet(pe.sets.filter(x=>x.done&&x.weight>0&&x.reps>0));
+      if(pb&&(!pBest||pb.vol>pBest.vol))pBest=pb;
     });
-    const nBest=Math.max.apply(null,done.map(x=>e1rm(x.weight,x.reps)));
-    const nW=Math.max.apply(null,done.map(x=>x.weight));
-    if(!seen)                    out.push({name:e.name,kind:'first',to:nBest});
-    else if(nBest>pBest+0.05)    out.push({name:e.name,kind:'e1rm',from:pBest,to:nBest});
-    else if(nW>pW)               out.push({name:e.name,kind:'weight',from:pW,to:nW});
+    const nb=bestSet(done);
+    if(!pBest)                 out.push({name:e.name,kind:'first',to:nb});
+    else if(nb.vol>pBest.vol)  out.push({name:e.name,kind:'pr',from:pBest,to:nb});
   });
   return out;
 }
@@ -1170,8 +1446,7 @@ function renderDone(){
   if(LASTREC.length){
     h='<div class="lbl" style="margin:0 0 8px">'+LASTREC.length+' record'+(LASTREC.length===1?'':'s')+'</div>';
     LASTREC.forEach(r=>{
-      const g = r.kind==='first' ? 'first logged'
-              : '+'+(Math.round((r.to-r.from)*10)/10)+(r.kind==='weight'?' kg':' est. 1RM');
+      const g = r.to.weight+' × '+r.to.reps+(r.kind==='first'?' · first logged':'');
       h+='<div class="rec'+(r.kind==='first'?' first':'')+'"><span class="n3">'+r.name+'</span><span class="g3">'+g+'</span></div>';
     });
   }
@@ -1325,8 +1600,7 @@ async function layoutPlain(g){
     ctr('RECORDS',mid,856+y0,4.4);
     LASTREC.slice(0,6).forEach((r,i)=>{
       const y=920+y0+i*52;
-      const gain = r.kind==='first' ? 'first logged'
-                 : '+'+(Math.round((r.to-r.from)*10)/10)+(r.kind==='weight'?' kg':' 1RM');
+      const gain = r.to.weight+'×'+r.to.reps;
       g.fillStyle='#E8E2D5'; g.font='400 31px "Iowan Old Style",Charter,Georgia,serif';
       let n=r.name; while(g.measureText(n).width>CW-470 && n.length>6) n=n.slice(0,-2);
       if(n!==r.name) n=n.trim()+'…';
@@ -1387,9 +1661,11 @@ function renderHist(){
   const done=SESSIONS.filter(s=>s.status==='completed').slice().reverse();
   $('histList').innerHTML=done.length?done.map(s=>{
     const sets=s.exercises.reduce((a,e)=>a+e.sets.filter(x=>x.done).length,0);
+    const stat=s.dayKey==='CARDIO' ? 'Cardio · '+dur(s.duration)
+      : sets+' set'+(sets===1?'':'s')+' · '+Math.round(s.totalVolume).toLocaleString()+' kg';
     return '<div class="hrow" data-id="'+s.id+'"><span class="d">'+s.date.slice(5)+'</span>'+
       '<span class="n2">'+s.dayName+(s.isDeload?' · deload':'')+'</span>'+
-      '<span class="v2">'+sets+' set'+(sets===1?'':'s')+' · '+Math.round(s.totalVolume).toLocaleString()+' kg</span>'+
+      '<span class="v2">'+stat+'</span>'+
       '<span class="go">›</span></div>';
   }).join(''):'<div class="empty">Nothing logged yet.<br>Finish a session and it appears here.</div>';
 }
@@ -1415,13 +1691,22 @@ armHold($('dtDelete'),1500,async()=>{
 /* ---- one completed session, every set as logged ---- */
 function renderDetail(s){
   dtSess=s;
+  $('dtName').textContent=s.dayName+(s.isDeload?' · deload':'');
+  $('dtSub').textContent=s.date+' · cycle '+(s.cycle||1);
+  if(s.dayKey==='CARDIO'){
+    $('dtStats').innerHTML=
+      '<div><div class="k">Type</div><div class="v">Cardio</div></div>'+
+      '<div><div class="k">Duration</div><div class="v">'+dur(s.duration)+'</div></div>';
+    $('dtBody').innerHTML = s.notes
+      ? '<div class="dtEx"><div class="k lbl">Notes</div><p class="dtNote">'+esc(s.notes)+'</p></div>'
+      : '<div class="empty">No sets to log here — just the time.</div>';
+    return;
+  }
   const sets=s.exercises.reduce((a,e)=>a+e.sets.filter(x=>x.done).length,0);
   const exs =s.exercises.filter(e=>e.sets.some(x=>x.done)).length;
   const recs=recordsFor(s), recNames={};
   recs.forEach(r=>recNames[r.name]=r);
 
-  $('dtName').textContent=s.dayName+(s.isDeload?' · deload':'');
-  $('dtSub').textContent=s.date+' · cycle '+(s.cycle||1);
   const v=Math.round(s.totalVolume);
   $('dtStats').innerHTML=
     '<div><div class="k">Volume</div><div class="v gold">'+(v>=10000?(v/1000).toFixed(1)+'k':v.toLocaleString())+' kg</div></div>'+
@@ -1437,9 +1722,9 @@ function renderDetail(s){
        '<h5>'+e.name+(pr?' <span style="color:var(--crimson);font-size:12px">· record</span>':'')+'</h5>'+
        '<div class="tg">'+(e.targets?[...new Set(e.targets.map(normTarget))].join(' / '):'')+(e.repRange?' · '+e.repRange:'')+(e.subOf?' · in place of '+esc(e.subOf):'')+'</div>';
     if(done.length){
-      const bestE=Math.max.apply(null,done.map(x=>e1rm(x.weight,x.reps)));
+      const bestV=Math.max.apply(null,done.map(x=>x.weight*x.reps));
       h+='<div class="dtSets">'+done.map(x=>{
-        const top=pr&&Math.abs(e1rm(x.weight,x.reps)-bestE)<0.01;
+        const top=pr&&(x.weight*x.reps)===bestV;
         return '<span class="dtSet'+(top?' pr':'')+'">'+x.weight+' × '+x.reps+'</span>';
       }).join('')+'</div>';
     } else {
@@ -1461,7 +1746,9 @@ function isoMinus(days){
 function renderVol(){
   const from=isoMinus(6);                       /* today plus the 6 before it */
   const map=setsByTarget(from);
-  const inWin=SESSIONS.filter(s=>s.status==='completed'&&s.date>=from);
+  /* cardio has no sets or targets — exclude it here too so it never nudges
+     the session count or tonnage in a tab that's specifically about lifting */
+  const inWin=SESSIONS.filter(s=>s.status==='completed'&&s.date>=from&&s.dayKey!=='CARDIO');
   const sets=inWin.reduce((a,s)=>a+s.exercises.reduce((b,e)=>b+e.sets.filter(x=>x.done).length,0),0);
   const vol =inWin.reduce((a,s)=>a+(s.totalVolume||0),0);
 
