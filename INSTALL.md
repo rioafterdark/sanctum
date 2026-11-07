@@ -174,6 +174,62 @@ history, notes and records carry over under the new names. In Lower C, FFE Barbe
 Lunge is now **FFE DB Reverse Lunge**; this one is tracked as a distinct exercise rather
 than merged with the old barbell version, since the load isn't comparable.
 
+Twelve more exercises joined the catalog in v20, same treatment — Swap and Add exercise
+only, no prescribed routine slot changed: **Shoulders** — Machine Shoulder Press, Plate
+Loaded Machine Shoulder Press, DB Lateral Raises; **Chest** — Plate Loaded Machine Chest
+Press, Plate Loaded Incline Chest Press; **Back** — Neutral Grip Pull Ups, Chin Ups;
+**Glutes** — KAS Glute Bridges, 1/4 Machine Hip Thrusts, Leg Press - Feet High and Wide,
+Reverse Hack Squats.
+
+## Unilateral exercises and per-side volume (v20/v21)
+
+Some exercises are logged one side at a time — a single dumbbell, one arm on a cable, one
+leg — and the number you type doesn't always mean the same thing. For the 17 exercises
+below, the weight field is now labeled **kg/side** instead of kg: you keep typing the same
+number you always have (the load on one arm/dumbbell), but behind the scenes the app now
+counts both sides for Volume, tonnage, and personal records. Your entered weight and reps
+still display exactly as logged everywhere in the app — only the record-keeping math
+changed.
+
+**kg/side exercises** (finalized from the exercise-review sheet): Single-Arm Lat Pulldown,
+Bayesian Cable Curls, Dumbbell Hammer Curl, Incline DB Bicep Curls, High-to-Low Cable Fly
+w/ Press, Low-to-High Cable Fly, B-Stance Romanian Deadlift, DB Walking Lunges, Machine
+Glute Kickback, Single Leg Step Ups, Single-Leg Leg Extension, Cable Lateral Raises, DB
+Lateral Raises, Dumbbell Y-Raises, Single Arm Rear Delt Fly, DB Skull Crushers, Single Arm
+Tricep Pushdown. Everything else (B-Stance Hip Thrust, DB Bulgarian Split Squat, and the
+rest) was deliberately marked *not* unilateral-for-volume-purposes — either the weight you
+log there is already a shared/total reading (a barbell, a machine stack), or you confirmed
+it should stay as-is.
+
+## Bringing the corrected historical data across (one-time, v21)
+
+The exercise-review sheet also carried **weight corrections**: several exercises had been
+logged under the old "total, not per-side" convention, so their historical weight entries
+needed halving to match the new kg/side convention — e.g. Cable Lateral Raises' logged
+46 kg becomes the true per-side 23 kg. B-Stance Romanian Deadlift's sets had both weight
+*and* reps halved (60×24 → 30×12), since the old entries combined both sides into one
+number on both counts. One exercise was also **reclassified**: the 160×20 sets logged as
+Machine Hip Thrust on 2026-11-03 were actually a KAS Glute Bridges substitution, so that
+entry now lives under its own exercise, and the stale note is gone.
+
+This can't go through the normal **Import backup** — that only fills in sessions by ID that
+don't already exist on your phone, so it would skip every one of these corrected sessions
+since you already have them logged. To bring the corrected numbers across:
+
+1. Settings → **Export backup**, just as a fresh safety copy of what's on your phone right now.
+2. Settings → **Erase all data** (this clears sessions, notes, and the cycle — that's expected).
+3. Settings → **Import backup** → pick the corrected file I sent you.
+
+Everything comes back exactly as before except the exercises named above, which now carry
+their corrected numbers — and the Volume tab's totals for any affected session are
+recalculated to match.
+
+**One thing I didn't touch:** Single-Arm Lat Pulldown's most recent session (2026-11-02,
+second set) is logged as **100 kg × 100 reps**, which both the pre- and post-correction
+data carry forward as-is — that's an existing typo in your logging, not something the
+correction touched, and with the new doubling it'll show up as an inflated all-time Best
+until you fix it (edit that set in History, or just log a clean one to overtake it).
+
 ## What changed from the old app
 
 - Routine is six workouts — Upper A/B/C and Lower A/B/C. Upper sessions reorder three

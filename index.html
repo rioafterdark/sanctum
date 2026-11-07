@@ -622,7 +622,14 @@ const CATALOG = {
   U:[
     ['Plate Loaded Lat Pulldown',2,'6-10',180,['Back']],
     ['Plate Loaded Pronated Chest Supported Row',2,'6-10',180,['Back']],
-    ['Plate Loaded Neutral Chest Supported Row',2,'6-10',180,['Back']]
+    ['Plate Loaded Neutral Chest Supported Row',2,'6-10',180,['Back']],
+    ['Machine Shoulder Press',2,'6-10',180,['Shoulders']],
+    ['Plate Loaded Machine Shoulder Press',2,'6-10',180,['Shoulders']],
+    ['Plate Loaded Machine Chest Press',2,'6-10',180,['Chest']],
+    ['Plate Loaded Incline Chest Press',2,'6-10',180,['Chest']],
+    ['Neutral Grip Pull Ups',2,'6-10',180,['Back']],
+    ['Chin Ups',2,'6-10',180,['Back']],
+    ['DB Lateral Raises',2,'10-15',120,['Shoulders']]
   ],
   L:[
     ['DB Walking Lunges',2,'6-10',180,['Glutes']],
@@ -632,7 +639,11 @@ const CATALOG = {
     ['Pit Shark RDL',2,'6-10',180,['Glutes']],
     ['B-Stance Hip Thrust',2,'6-10',180,['Glutes']],
     ['Plate Loaded Abductor Machine',2,'12-15',120,['Glutes']],
-    ['Machine Glute Kickback',2,'12-15',120,['Glutes']]
+    ['Machine Glute Kickback',2,'12-15',120,['Glutes']],
+    ['KAS Glute Bridges',2,'6-10',180,['Glutes']],
+    ['1/4 Machine Hip Thrusts',2,'6-10',180,['Glutes']],
+    ['Leg Press - Feet High and Wide',2,'6-10',180,['Glutes']],
+    ['Reverse Hack Squats',2,'6-10',180,['Glutes']]
   ]
 };
 
@@ -673,6 +684,31 @@ const ALIAS={
   'Abductor Machine · Lean Back':'Abductor Machine'
 };
 const canon=n=>ALIAS[n]||n;
+/* Exercises logged "per side" (one dumbbell/arm/leg at a time) whose volume
+   math should count BOTH sides — the number Rui types stays exactly what he
+   typed, but tonnage/PR comparisons multiply it by 2. Finalized from the
+   exercise-review sheet (2026-11-07): every exercise Rui marked Unilateral=Y
+   with Volume Treatment "Double (per-side)". */
+const UNILATERAL_DOUBLE=new Set([
+  'Single-Arm Lat Pulldown',
+  'Bayesian Cable Curls',
+  'Dumbbell Hammer Curl',
+  'Incline DB Bicep Curls',
+  'High-to-Low Cable Fly w/ Press',
+  'Low-to-High Cable Fly',
+  'B-Stance Romanian Deadlift',
+  'DB Walking Lunges',
+  'Machine Glute Kickback',
+  'Single Leg Step Ups',
+  'Single-Leg Leg Extension',
+  'Cable Lateral Raises',
+  'DB Lateral Raises',
+  'Dumbbell Y-Raises',
+  'Single Arm Rear Delt Fly',
+  'DB Skull Crushers',
+  'Single Arm Tricep Pushdown'
+].map(canon));
+const volMult=exName=>UNILATERAL_DOUBLE.has(canon(exName))?2:1;
 /* muscle names retired from TRACKED — old sessions still carry them in their
    stored snapshot, so fold them into their new home wherever a target is read
    or displayed, rather than letting them silently vanish from the count */
@@ -781,10 +817,14 @@ function best(setsArr){
 /* the single highest weight×reps ("volume") set in a list — this is the app's
    one definition of "best set", used for the live PR highlight, the records
    shown on the done screen and share card, and the all-time best-set line */
-function bestSet(setsArr){
+/* mult: volume multiplier (see UNILATERAL_DOUBLE below) — weight/reps on the
+   returned object stay exactly as logged; only .vol (used for PR comparisons
+   and tonnage) reflects it, so the UI keeps showing the number Rui typed */
+function bestSet(setsArr,mult){
+  mult=mult||1;
   let out=null;
   setsArr.forEach(x=>{
-    const v=(x.weight||0)*(x.reps||0);
+    const v=(x.weight||0)*(x.reps||0)*mult;
     if(v>0&&(!out||v>out.vol))out={weight:x.weight,reps:x.reps,vol:v};
   });
   return out;
@@ -794,11 +834,12 @@ function bestSet(setsArr){
    was logged under */
 function allTimeBest(exName,excludeId){
   let out=null;
+  const mult=volMult(exName);
   SESSIONS.forEach(s=>{
     if(s.id===excludeId||s.status!=='completed')return;
     const e=s.exercises.find(x=>canon(x.name)===canon(exName));
     if(!e)return;
-    const b=bestSet(e.sets.filter(x=>x.done));
+    const b=bestSet(e.sets.filter(x=>x.done),mult);
     if(b&&(!out||b.vol>out.vol))out=b;
   });
   return out;
@@ -1103,6 +1144,8 @@ function renderSession(){
     const anyDone=e.sets.some(s=>s.done);
     const opts=swapOptions(e);
     const canSwap=!e.skipped&&!anyDone&&(!!e.subOf||opts.close.length+opts.rest.length>0);
+    const mult=volMult(e.name);
+    const wUnit=mult===2?'kg/side':'kg';
     div.innerHTML=
       '<div class="exhead"><span class="num">'+pad(ei+1)+'</span><h3>'+esc(e.name)+'</h3></div>'+
       '<div class="exmeta">'+e.sets.length+' × '+e.repRange+' · '+(e.restSec>=120?(e.restSec/60)+' min':e.restSec+'s')+' rest · '+[...new Set(e.targets.map(normTarget))].join(' / ')+'</div>'+
@@ -1110,10 +1153,10 @@ function renderSession(){
       lastHtml+
       (nt?'<div class="exnote" data-act="note" data-e="'+ei+'">'+esc(nt)+'</div>':'')+
       (e.skipped?'':'<div class="sets">'+e.sets.map((s,si)=>{
-        const pb=pbest&&s.done&&(s.weight*s.reps)>pbest.vol;
+        const pb=pbest&&s.done&&((s.weight*s.reps*mult)>pbest.vol);
         return '<div class="set'+(s.done?' ok':'')+(pb?' pr':'')+'" data-e="'+ei+'" data-s="'+si+'">'+
           '<span class="sn">'+s.n+'</span>'+
-          '<span class="fld"><input type="number" inputmode="decimal" step="0.5" placeholder="—" value="'+(s.weight??'')+'" data-f="weight"><u>kg</u></span>'+
+          '<span class="fld"><input type="number" inputmode="decimal" step="0.5" placeholder="—" value="'+(s.weight??'')+'" data-f="weight"><u>'+wUnit+'</u></span>'+
           '<span class="fld"><input type="number" inputmode="numeric" placeholder="—" value="'+(s.reps??'')+'" data-f="reps"><u>reps</u></span>'+
           '<button class="tick" aria-label="Log set '+s.n+'"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>'+
         '</div>';}).join('')+'</div>')+
@@ -1359,8 +1402,8 @@ async function doFinish(){
   S.status='completed';
   S.endedAt=Date.now();
   S.duration=Math.floor((S.endedAt-S.startedAt)/1000);
-  S.totalVolume=S.exercises.reduce((a,e)=>a+e.sets.filter(s=>s.done)
-    .reduce((b,s)=>b+(s.weight||0)*(s.reps||0),0),0);
+  S.totalVolume=S.exercises.reduce((a,e)=>{const m=volMult(e.name);return a+e.sets.filter(s=>s.done)
+    .reduce((b,s)=>b+(s.weight||0)*(s.reps||0)*m,0);},0);
   await put('sessions',S);
   await load();
   clearInterval(tick);releaseWake();
@@ -1405,15 +1448,16 @@ function recordsFor(sess){
   sess.exercises.forEach(e=>{
     const done=e.sets.filter(s=>s.done&&s.weight>0&&s.reps>0);
     if(!done.length)return;
+    const mult=volMult(e.name);
     let pBest=null;
     SESSIONS.forEach(s=>{
       if(s.id===sess.id||s.status!=='completed'||s.date>sess.date)return;
       const pe=s.exercises.find(x=>canon(x.name)===canon(e.name));
       if(!pe)return;
-      const pb=bestSet(pe.sets.filter(x=>x.done&&x.weight>0&&x.reps>0));
+      const pb=bestSet(pe.sets.filter(x=>x.done&&x.weight>0&&x.reps>0),mult);
       if(pb&&(!pBest||pb.vol>pBest.vol))pBest=pb;
     });
-    const nb=bestSet(done);
+    const nb=bestSet(done,mult);
     if(!pBest)                 out.push({name:e.name,kind:'first',to:nb});
     else if(nb.vol>pBest.vol)  out.push({name:e.name,kind:'pr',from:pBest,to:nb});
   });
